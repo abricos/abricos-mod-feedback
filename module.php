@@ -1,13 +1,11 @@
 <?php 
 /**
-* @version $Id: module.php 14 2009-08-20 14:13:11Z roosit $
-* @package CMSBrick
-* @copyright Copyright (C) 2008 CMSBrick. All rights reserved.
-* @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
-*/
-
-/**
- * Модуль обратной связи 
+ * @version $Id: module.php 14 2009-08-20 14:13:11Z roosit $
+ * @package CMSBrick
+ * @subpackage Feedback
+ * @copyright Copyright (C) 2008 CMSBrick. All rights reserved.
+ * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+ * @author Alexander Kuzmin (roosit@cmsbrick.ru)
  */
 
 $cms = CMSRegistry::$instance;
@@ -15,15 +13,29 @@ $cms = CMSRegistry::$instance;
 $mod = new CMSModFeedback();
 $cms->modules->Register($mod);
 
+/**
+ * Модуль обратной связи
+ * @package CMSBrick
+ * @subpackage Feedback
+ */
 class CMSModFeedback extends CMSModule {
-	
-	public function __construct(){
+
+	/**
+	 * Конструктор 
+	 */
+	public function CMSModFeedback(){
 		$this->version = "1.0.0";
 		$this->name = "feedback";
 		$this->takelink = "feedback";
 	}
 }
 
+/**
+ * Класс статичных функций модуля
+ * 
+ * @package CMSBrick
+ * @subpackage Feedback
+ */
 class CMSModFeedbackMan {
 	
 	public static function IsAdmin(){
@@ -35,7 +47,11 @@ class CMSModFeedbackMan {
 	}
 	
 	/**
-	 * Добавление сообщения
+	 * Добавить сообщение от пользователя и отправить уведомление администратору сайта
+	 * 
+	 * @static
+	 * @param object $data данные сообщения 
+	 * @return integer идентификатор нового сообщения
 	 */
 	public static function MessageAppend($data){
 		$utmanager = CMSRegistry::$instance->GetUserTextManager();
@@ -68,16 +84,37 @@ class CMSModFeedbackMan {
 		return CMSQFeedback::MessageAppend(Brick::$db, $globalid, $userid, $data->fio, $data->phone, $data->email, $message, $data->owner, $data->ownerparam);
 	}
 	
+	/**
+	 * Получить список сообщений из базы
+	 * 
+	 * @static
+	 * @param integer $status статус сообщения, 0 - новое, 1 - сообщения на которые был дан ответ
+	 * @param integer $page номер страницы
+	 * @param integer $limit кол-во сообщений на страницу
+	 * @return integer указатель на результат SQL запроса
+	 */
 	public static function MessageList($status, $page, $limit){
 		if (!CMSModFeedbackMan::IsAdmin()){return ;}
 		return CMSQFeedback::MessageList(Brick::$db, $status, $page, $limit);
 	}
 	
+	/**
+	 * Удалить сообщение из базы
+	 * 
+	 * @static
+	 * @param integer $messageid идентификатор сообщения
+	 */
 	public static function MessageRemove($messageid){
 		if (!CMSModFeedbackMan::IsAdmin()){ return ;}
 		CMSQFeedback::MessageRemove(Brick::$db, $messageid);
 	}
 	
+	/**
+	 * Ответить на сообщение, занеся ответ в базу и отправив email с ответом пользователю
+	 * 
+	 * @static
+	 * @param object $data данные сообщения и текст ответа
+	 */
 	public static function Reply($data){
 		if (!CMSModFeedbackMan::IsAdmin()){return ;}
 		
@@ -95,13 +132,33 @@ class CMSModFeedbackMan {
 	}
 }
 
+/**
+ * Класс статичных функций запросов к базе данных
+ * 
+ * @package CMSBrick
+ * @subpackage Feedback
+ */
 class CMSQFeedback {
 	
+	/**
+	 * Новое сообщение 
+	 * @var integer
+	 */
 	const MSG_NEW = 0;
+	/**
+	 * Сообщение на которое был дан ответ администратором сайта 
+	 * @var integer
+	 */
 	const MSG_REPLY = 1;
 	
 	/**
-	 * Ответ на сообщение
+	 * Добавить ответ на сообщение пользователя и изменить статус этого сообщения на отвеченное
+	 * 
+	 * @static
+	 * @param CMSDatabase $db менеджер базы данных
+	 * @param integer $messageid идентификатор сообщения
+	 * @param integer $userid идентификатор пользователя который дает ответ на сообщение
+	 * @param string $body текст ответа
 	 */
 	public static function Reply(CMSDatabase $db, $messageid, $userid, $body){
 		$sql = "
