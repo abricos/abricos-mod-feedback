@@ -1,5 +1,5 @@
 /**
-* @version $Id: api.js 15 2009-08-29 13:28:01Z roosit $
+* @version $Id$
 * @package CMSBrick
 * @copyright Copyright (C) 2008 CMSBrick. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php

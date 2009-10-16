@@ -1,5 +1,5 @@
 /**
-* @version $Id: form.js 14 2009-08-20 14:13:11Z roosit $
+* @version $Id$
 * @package CMSBrick
 * @copyright Copyright (C) 2008 CMSBrick. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php

@@ -2,7 +2,7 @@
 /**
  * Структура таблиц модуля
  * 
- * @version $Id: shema.php 14 2009-08-20 14:13:11Z roosit $
+ * @version $Id$
  * @package CMSBrick
  * @subpackage Feedback
  * @copyright Copyright (C) 2008 CMSBrick. All rights reserved.

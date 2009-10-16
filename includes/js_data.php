@@ -2,7 +2,7 @@
 /**
  * Обработка запросов DataSet
  * 
- * @version $Id: js_data.php 14 2009-08-20 14:13:11Z roosit $
+ * @version $Id$
  * @package CMSBrick
  * @subpackage Feedback
  * @copyright Copyright (C) 2008 CMSBrick. All rights reserved.
