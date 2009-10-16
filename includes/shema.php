@@ -1,4 +1,14 @@
 <?php
+/**
+ * Структура таблиц модуля
+ * 
+ * @version $Id: shema.php 14 2009-08-20 14:13:11Z roosit $
+ * @package CMSBrick
+ * @subpackage Feedback
+ * @copyright Copyright (C) 2008 CMSBrick. All rights reserved.
+ * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+ * @author Alexander Kuzmin (roosit@cmsbrick.ru)
+ */
 
 $cms = CMSRegistry::$instance;
 $charset = "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'";
