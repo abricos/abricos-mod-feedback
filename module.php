@@ -38,11 +38,11 @@ class CMSModFeedback extends CMSModule {
 class CMSModFeedbackMan {
 	
 	public static function IsAdmin(){
-		return CMSRegistry::$instance->session->IsAdminMode();
+		return CMSRegistry::$instance->user->IsAdminMode();
 	}
 	
 	public static function IsRegistred(){
-		return CMSRegistry::$instance->session->IsRegistred();
+		return CMSRegistry::$instance->user->IsRegistred();
 	}
 	
 	/**
@@ -54,11 +54,14 @@ class CMSModFeedbackMan {
 	 */
 	public static function MessageAppend($data){
 		$utmanager = CMSRegistry::$instance->GetUserTextManager();
-		$message = $utmanager->Parser($data->message);
-		// $message = $data->message;
+
+		$utmanager->jevix->cfgSetAutoBrMode(true);
+		$message = $utmanager->JevixParser($data->message);;
+		$message = str_replace("<br/>", "", $message);
+		
 		if (empty($message)){ return 0; }
 		
-		$userid = Brick::$session->userinfo['userid'];
+		$userid = CMSRegistry::$instance->user->info['userid'];
 		if (!CMSModFeedbackMan::IsRegistred() && empty($data->email)){
 			return 0;
 		}
@@ -70,14 +73,12 @@ class CMSModFeedbackMan {
 		$subject = Brick::$builder->phrase->Get('feedback', 'adm_notify_subj');
 		$body = nl2br(Brick::$builder->phrase->Get('feedback', 'adm_notify'));
 		$body = sprintf($body, $data->fio, $data->phone, $data->email, $message);
+		
 		foreach ($arr as $email){
 			$email = trim($email);
 			if (empty($email)){ continue; }
-			$mailer = Brick::$cms->GetMailer();
-			$mailer->Subject = $subject;
-			$mailer->MsgHTML($body);
-			$mailer->AddAddress($email);
-			$mailer->Send();
+			
+			CMSRegistry::$instance->GetNotification()->SendMail($email, $subject, $body);
 		}
 		
 		return CMSQFeedback::MessageAppend(Brick::$db, $globalid, $userid, $data->fio, $data->phone, $data->email, $message, $data->owner, $data->ownerparam);
@@ -118,14 +119,10 @@ class CMSModFeedbackMan {
 		if (!CMSModFeedbackMan::IsAdmin()){return ;}
 		
 		$messageid = $data->id;
-		$userid = Brick::$session->userinfo['userid'];
+		$userid = CMSRegistry::$instance->user->info['userid'];
 		$body = nl2br($data->rp_body);
-		
-		$mailer = Brick::$cms->GetMailer();
-		$mailer->Subject = "Re: ".Brick::$builder->phrase->Get('sys', 'site_name');
-		$mailer->MsgHTML($body);
-		$mailer->AddAddress($data->ml);
-		$mailer->Send();
+
+		CMSRegistry::$instance->GetNotification()->SendMail($data->ml, "Re: ".Brick::$builder->phrase->Get('sys', 'site_name'), $body );
 		
 		CMSQFeedback::Reply(Brick::$db, $messageid, $userid, $body);
 	}

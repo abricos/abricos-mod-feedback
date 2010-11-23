@@ -1,0 +1,20 @@
+<!--[*]
+[*]-->
+<div class="box" id="feedback-columnblock">
+	<h2>Обратная связь</h2>
+	Чтобы оставить сообщение администрации сайта, 
+	нажмите ссылку "<a href="#" onclick="showFeedbackPanel(); return false;">отправить сообщение</a>"
+</div>
+<script language='JavaScript' type='text/javascript' charset='utf-8'>
+	function showFeedbackPanel(){
+		Brick.ff('sys', 'wait', function(){
+			var Dom = YAHOO.util.Dom;
+			var lw = new Brick.widget.LayWait('feedback-columnblock');
+			Brick.ff('feedback', 'api', function(){
+				lw.hide();
+				Brick.mod.feedback.API.showNewMessagePanel();
+			});
+		});
+		return false;
+	};
+</script>

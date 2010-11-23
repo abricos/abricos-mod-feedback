@@ -17,7 +17,7 @@ Component.requires = {
 };
 Component.entryPoint = function(){
 	
-	if (!Brick.env.user.isModerator()){ return; }
+	if (!Brick.env.user.isAdmin()){ return; }
 	
 	var cp = Brick.mod.user.cp;
 	

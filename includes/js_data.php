@@ -39,7 +39,7 @@ foreach ($ds->ts as $ts){
 				}
 				break;
 			case 'config':
-				if (Brick::$cms->session->IsAdminMode()){
+				if (CMSRegistry::$instance->user->IsAdminMode()){
 					Brick::$builder->phrase->PreloadByModule($tsrs->p->mod);
 					foreach ($tsrs->r as $r){
 						if ($r->f=='u'){ Brick::$builder->phrase->Set($tsrs->p->mod, $r->d->nm, $r->d->ph); }
@@ -70,7 +70,7 @@ foreach ($ds->ts as $ts){
 				$rows = CMSModFeedbackMan::MessageList(0, 1, 1);
 				break;
 			case 'config':
-				if (Brick::$cms->session->IsAdminMode()){
+				if (CMSModFeedbackMan::IsAdmin()){
 					Brick::$builder->phrase->PreloadByModule($tsrs->p->mod);
 					$rows = Brick::$builder->phrase->GetArray($tsrs->p->mod);
 				}

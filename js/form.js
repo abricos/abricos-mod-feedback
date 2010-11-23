@@ -11,6 +11,7 @@
 
 var Component = new Brick.Component();
 Component.requires = {
+	yahoo: ['json'],
 	mod:[
 		{name: 'sys', files: ['data.js','container.js','form.js']},
 		{name: 'feedback', files: ['api.js']}
@@ -20,19 +21,17 @@ Component.entryPoint = function(){
 	
 	var Dom = YAHOO.util.Dom,
 		E = YAHOO.util.Event,
-		L = YAHOO.lang;
+		L = YAHOO.lang,
+		J = YAHOO.lang.JSON;
 	
 	var NS = this.namespace, 
+		API = NS.API,
 		TMG = this.template; 
 
-	var tSetVar = Brick.util.Template.setProperty;
-	
-	if (!Brick.objectExists('Brick.mod.feedback.data')){
-		Brick.mod.feedback.data = new Brick.util.data.byid.DataSet('feedback');
+	if (!NS.data){
+		NS.data = new Brick.util.data.byid.DataSet('feedback');
 	}
-	DATA = Brick.mod.feedback.data;
-	
-	var API = NS.API;
+	var DATA = NS.data;
 
 	var NewMessageElement = function(container, param){
 		this.init(container, param);
@@ -109,6 +108,44 @@ Component.entryPoint = function(){
 		}
 	};
 	
+	NewMessageElement.send = function(param, callback){
+		
+		param = L.merge({
+			'owner': '',
+			'ownerparam': '',
+			'beforemsg': '',
+			'aftermsg': '',
+			'data': {'fio': '','phone': '', 'email':'','message':''}
+		}, param || {});
+
+		
+		var table = DATA.get('message', true);
+		var rows = table.getRows();
+ 		var row = table.newRow();
+ 		var ownprm = "";
+ 		if (param['ownerparam'] != ''){
+ 			ownprm = encodeURIComponent(J.stringify(param['ownerparam']));
+ 		}
+ 		
+ 		var d = param['data'];
+ 		
+ 		var msg = param['beforemsg']+d['message']+param['aftermsg'];
+ 		
+ 		row.update({
+ 			'fio': d['fio'],
+ 			'phone':  d['phone'],
+ 			'email':  d['email'],
+ 			'message': msg,
+ 			'owner': param['owner'],
+ 			'ownerparam': ownprm
+ 		});
+ 		rows.add(row);
+ 		table.applyChanges();
+		DATA.request(true, callback);
+	};
+	
+	NS.NewMessageElement = NewMessageElement;
+	
 	var NewMessagePanel = function(param){
 		this.param = L.merge({'phonehide': false}, param || {});
 		NewMessagePanel.superclass.constructor.call(this, {
@@ -155,6 +192,10 @@ Component.entryPoint = function(){
 	};
 	NewMessageWidget.prototype = {
 		init: function(containerid, param){
+		
+			var TM = TMG.build('panel'), T = TM.data, TId = TM.idManager;
+			this._TM = TM; this._T = T; this._TId = TId;
+		
 			var container = Dom.get(containerid);
 			container.innerHTML = T['panel'];
 
@@ -167,13 +208,13 @@ Component.entryPoint = function(){
 			});
 		},
 		onClick: function(el){
-			if (TId['panel']['bsave'] == el.id){ this.save(); return true; }
+			if (this._TId['panel']['bsave'] == el.id){ this.save(); return true; }
 		}, 
 		save: function(){ 
 			if (!this.widget.save()){ return false; }
 				
 			this.widget.disable();
-			var btn = Dom.get(TId['panel']['bsave']);
+			var btn = Dom.get(this._TId['panel']['bsave']);
 			btn.style.display = 'none';
 			return true;
 		},

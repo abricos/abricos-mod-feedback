@@ -1,0 +1,62 @@
+<!--[*]
+[tt=main][/tt]
+[*]-->
+<h1 id="h1">Обратная связь</h1>
+<p>
+	Для отправки сообщения администрации сайта заполните поля формы.
+</p>
+<form id="feedback_static_form" class="field" style="width: 500px">
+
+	<table class="fiedls" style="width:100%"><tbody>
+		<tr>
+			<td><label>Контактное лицо:</label></td>
+			<td><input type="text" id="txt-feedback-fio" style="width: 250px" /></td>
+		</tr>
+		<tr>
+			<td><label>Телефон:</label></td>
+			<td><input type="text" id="txt-feedback-phone" style="width: 250px" /></td>
+		</tr>
+		<tr>
+			<td><label id="t66">E-mail:</label></td>
+			<td><input type="text" id="txt-feedback-email" value="" style="width: 250px" /></td>
+		</tr>
+	</tbody></table>
+	
+	<label>Сообщение:</label><br /> 
+	<textarea id="txt-feedback-message" style="width: 500px; height: 200px"></textarea>
+	
+	<div class="buttons right">
+		<input class="btn-send" onclick="feedBackSendMessage(); return false;" type="button" value="Отправить" class="btn" />
+	</div>
+</form>
+
+
+<script language='JavaScript' type='text/javascript' charset='utf-8'>
+	function feedBackSendMessage(){
+		Brick.ff('sys', 'wait', function() {
+			var Dom = YAHOO.util.Dom;
+			var lw = new Brick.widget.LayWait('feedback_static_form');
+			
+			Dom.getElementsBy(function(el){
+				el.disabled = "disabled";
+			}, '', 'feedback_static_form');
+			
+			var getval = function(id){
+				return Dom.get('txt-feedback-'+id).value;
+			};
+			
+			Brick.ff('feedback', 'form', function() {
+				Brick.mod.feedback.NewMessageElement.send({
+					'data': {
+						'fio': getval('fio'),
+						'phone': getval('phone'),
+						'email': getval('email'),
+						'message': getval('message')
+					}
+				});
+				lw.hide();
+				alert('Сообщение успешно отправлено');
+			});
+		});
+	};
+</script> 
