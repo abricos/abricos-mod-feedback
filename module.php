@@ -56,7 +56,8 @@ class CMSModFeedbackMan {
 		$utmanager = CMSRegistry::$instance->GetUserTextManager();
 
 		$utmanager->jevix->cfgSetAutoBrMode(true);
-		$message = $utmanager->JevixParser($data->message);;
+		$messageeml = $utmanager->JevixParser(nl2br($data->message));
+		$message = $utmanager->JevixParser($data->message);
 		$message = str_replace("<br/>", "", $message);
 		
 		if (empty($message)){ return 0; }
@@ -72,7 +73,7 @@ class CMSModFeedbackMan {
 		$arr = explode(',', $emails);
 		$subject = Brick::$builder->phrase->Get('feedback', 'adm_notify_subj');
 		$body = nl2br(Brick::$builder->phrase->Get('feedback', 'adm_notify'));
-		$body = sprintf($body, $data->fio, $data->phone, $data->email, $message);
+		$body = sprintf($body, $data->fio, $data->phone, $data->email, $messageeml);
 		
 		foreach ($arr as $email){
 			$email = trim($email);
