@@ -7,11 +7,6 @@
  * @author Alexander Kuzmin (roosit@abricos.org)
  */
 
-$cms = CMSRegistry::$instance;
-
-$mod = new CMSModFeedback();
-$cms->modules->Register($mod);
-
 /**
  * Модуль обратной связи
  * @package Abricos 
@@ -236,7 +231,9 @@ class CMSQFeedback {
 		$db->query_write($sql);
 		return $db->insert_id();
 	}
-	
 }
+
+$mod = new CMSModFeedback();
+CMSRegistry::$instance->modules->Register($mod);
 
 ?>
