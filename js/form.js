@@ -148,12 +148,9 @@ Component.entryPoint = function(){
 	
 	var NewMessagePanel = function(param){
 		this.param = L.merge({'phonehide': false}, param || {});
-		NewMessagePanel.superclass.constructor.call(this, {
-			modal: true,
-			fixedcenter: true
-		});
+		NewMessagePanel.superclass.constructor.call(this);
 	};
-	YAHOO.extend(NewMessagePanel, Brick.widget.Panel, {
+	YAHOO.extend(NewMessagePanel, Brick.widget.Dialog, {
 		initTemplate: function(){
 			var TM = TMG.build('standart'), T = TM.data, TId = TM.idManager;
 			this._TM = TM; this._T = T; this._TId = TId;
