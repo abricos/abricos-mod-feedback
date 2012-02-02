@@ -12,13 +12,13 @@
  * @package Abricos 
  * @subpackage Feedback
  */
-class CMSModFeedback extends CMSModule {
+class CMSModFeedback extends Ab_Module {
 
 	/**
 	 * Конструктор 
 	 */
 	public function CMSModFeedback(){
-		$this->version = "0.2";
+		$this->version = "0.2.1";
 		$this->name = "feedback";
 		$this->takelink = "feedback";
 	}
@@ -33,11 +33,11 @@ class CMSModFeedback extends CMSModule {
 class CMSModFeedbackMan {
 	
 	public static function IsAdmin(){
-		return CMSRegistry::$instance->user->IsAdminMode();
+		return Abricos::$user->IsAdminMode();
 	}
 	
 	public static function IsRegistred(){
-		return CMSRegistry::$instance->user->IsRegistred();
+		return Abricos::$user->id > 0;
 	}
 	
 	/**
@@ -48,7 +48,7 @@ class CMSModFeedbackMan {
 	 * @return integer идентификатор нового сообщения
 	 */
 	public static function MessageAppend($data){
-		$utmanager = CMSRegistry::$instance->GetUserTextManager();
+		$utmanager = Abricos::TextParser();
 
 		$utmanager->jevix->cfgSetAutoBrMode(true);
 		$messageeml = $utmanager->JevixParser(nl2br($data->message));
@@ -57,7 +57,7 @@ class CMSModFeedbackMan {
 		
 		if (empty($message)){ return 0; }
 		
-		$userid = CMSRegistry::$instance->user->info['userid'];
+		$userid = Abricos::$user->info['userid'];
 		if (!CMSModFeedbackMan::IsRegistred() && empty($data->email)){
 			return 0;
 		}
@@ -74,7 +74,7 @@ class CMSModFeedbackMan {
 			$email = trim($email);
 			if (empty($email)){ continue; }
 			
-			CMSRegistry::$instance->GetNotification()->SendMail($email, $subject, $body);
+			Abricos::Notify()->SendMail($email, $subject, $body);
 		}
 		
 		return CMSQFeedback::MessageAppend(Brick::$db, $globalid, $userid, $data->fio, $data->phone, $data->email, $message, $data->owner, $data->ownerparam);
@@ -115,10 +115,10 @@ class CMSModFeedbackMan {
 		if (!CMSModFeedbackMan::IsAdmin()){return ;}
 		
 		$messageid = $data->id;
-		$userid = CMSRegistry::$instance->user->info['userid'];
+		$userid = Abricos::$user->info['userid'];
 		$body = nl2br($data->rp_body);
 
-		CMSRegistry::$instance->GetNotification()->SendMail($data->ml, "Re: ".Brick::$builder->phrase->Get('sys', 'site_name'), $body );
+		Abricos::Notify()->SendMail($data->ml, "Re: ".Brick::$builder->phrase->Get('sys', 'site_name'), $body );
 		
 		CMSQFeedback::Reply(Brick::$db, $messageid, $userid, $body);
 	}
@@ -147,12 +147,12 @@ class CMSQFeedback {
 	 * Добавить ответ на сообщение пользователя и изменить статус этого сообщения на отвеченное
 	 * 
 	 * @static
-	 * @param CMSDatabase $db менеджер базы данных
+	 * @param Ab_Database $db менеджер базы данных
 	 * @param integer $messageid идентификатор сообщения
 	 * @param integer $userid идентификатор пользователя который дает ответ на сообщение
 	 * @param string $body текст ответа
 	 */
-	public static function Reply(CMSDatabase $db, $messageid, $userid, $body){
+	public static function Reply(Ab_Database $db, $messageid, $userid, $body){
 		$sql = "
 			INSERT INTO ".$db->prefix."fb_reply
 			(userid, messageid, body, dateline) VALUES (
@@ -172,7 +172,7 @@ class CMSQFeedback {
 		$db->query_write($sql);
 	}
 	
-	public static function MessageList(CMSDatabase $db, $status, $page, $limit){
+	public static function MessageList(Ab_Database $db, $status, $page, $limit){
 		$sql = "
 			SELECT
 				messageid as id,
@@ -192,7 +192,7 @@ class CMSQFeedback {
 		return $db->query_read($sql);
 	}
 	
-	public static function Message(CMSDatabase $db, $messageid){
+	public static function Message(Ab_Database $db, $messageid){
 		$sql = "
 			SELECT
 				a.messageid as id,
@@ -204,7 +204,7 @@ class CMSQFeedback {
 		return $db->query_read($sql);
 	}
 	
-	public static function MessageRemove(CMSDatabase $db, $messageid){
+	public static function MessageRemove(Ab_Database $db, $messageid){
 		$sql = "
 			DELETE FROM ".$db->prefix."fb_message
 			WHERE messageid=".bkint($messageid)."
@@ -212,7 +212,7 @@ class CMSQFeedback {
 		$db->query_write($sql);
 	}
 	
-	public static function MessageAppend(CMSDatabase $db, $globalid, $userid, $fio, $phone, $email, $message, $owner, $ownerparam){
+	public static function MessageAppend(Ab_Database $db, $globalid, $userid, $fio, $phone, $email, $message, $owner, $ownerparam){
 		$sql = "
 			INSERT INTO ".$db->prefix."fb_message
 			(globalmessageid, userid, fio, phone, email, message, owner, ownerparam, dateline) VALUES
@@ -233,7 +233,6 @@ class CMSQFeedback {
 	}
 }
 
-$mod = new CMSModFeedback();
-CMSRegistry::$instance->modules->Register($mod);
+Abricos::ModuleRegister(new CMSModFeedback());
 
 ?>

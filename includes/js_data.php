@@ -39,7 +39,7 @@ foreach ($ds->ts as $ts){
 				}
 				break;
 			case 'config':
-				if (CMSRegistry::$instance->user->IsAdminMode()){
+				if (Abricos::$user->IsAdminMode()){
 					Brick::$builder->phrase->PreloadByModule($tsrs->p->mod);
 					foreach ($tsrs->r as $r){
 						if ($r->f=='u'){ Brick::$builder->phrase->Set($tsrs->p->mod, $r->d->nm, $r->d->ph); }
