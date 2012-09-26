@@ -1,8 +1,8 @@
 <?php 
 /**
  * @version $Id$
- * @package Abricos * @subpackage Feedback
- * @copyright Copyright (C) 2008 Abricos All rights reserved.
+ * @package Abricos 
+ * @subpackage Feedback
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
  * @author Alexander Kuzmin (roosit@abricos.org)
  */
@@ -18,7 +18,7 @@ class CMSModFeedback extends Ab_Module {
 	 * Конструктор 
 	 */
 	public function CMSModFeedback(){
-		$this->version = "0.2.1";
+		$this->version = "0.2.2";
 		$this->name = "feedback";
 		$this->takelink = "feedback";
 	}

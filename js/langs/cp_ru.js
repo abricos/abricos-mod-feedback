@@ -1,9 +1,11 @@
-Brick.util.Language.add('ru',{'mod':{'feedback':{
+Brick.util.Language.add('ru',{'mod': {'{C#MODNAME}':{
 	'title': 'Обратная связь',
-	'roles':{
+	'roles': {
 		'10': 'Чтение',
 		'30': 'Запись',
 		'50': 'Администрирование'
-	},	
-	'cp':{'title': 'Обратная связь' }
+	},
+	'cp': {
+		'title': 'Обратная связь'
+	}
 }}});
