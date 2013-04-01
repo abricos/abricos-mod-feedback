@@ -60,4 +60,8 @@ if ($updateManager->isInstall()){
 	);
 	
 }
+
+if ($updateManager->isUpdate('0.2.3')){
+	Abricos::GetModule('feedback')->permission->Install();
+}
 ?>

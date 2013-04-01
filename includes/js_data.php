@@ -13,8 +13,12 @@
 $brick = Brick::$builder->brick;
 
 $mod = Brick::$modules->GetModule('sys');
-$modfb = Brick::$modules->GetModule('feedback');
 $ds = $mod->getDataSet();
+
+Brick::$modules->GetModule('feedback');
+FeedbackModule::$instance->GetManager();
+
+$man = FeedbackManager::$instance;
 
 $ret = new stdClass();
 $ret->_ds = array();
@@ -28,21 +32,23 @@ foreach ($ds->ts as $ts){
 			case 'message':
 				foreach ($tsrs->r as $r){
 					if ($r->f == 'a'){ 
-						$newMessageId = CMSModFeedbackMan::MessageAppend($r->d);
+						$newMessageId = $man->MessageAppend($r->d);
 					}
 				}
 				break;
 			case 'messages':
 				foreach ($tsrs->r as $r){
-					if ($r->f == 'u'){ CMSModFeedbackMan::Reply($r->d); }
-					if ($r->f == 'd'){ CMSModFeedbackMan::MessageRemove($r->d->id); }
+					if ($r->f == 'u'){ $man->Reply($r->d); }
+					if ($r->f == 'd'){ $man->MessageRemove($r->d->id); }
 				}
 				break;
 			case 'config':
-				if (Abricos::$user->IsAdminMode()){
+				if ($man->IsAdminRole()){
 					Brick::$builder->phrase->PreloadByModule($tsrs->p->mod);
 					foreach ($tsrs->r as $r){
-						if ($r->f=='u'){ Brick::$builder->phrase->Set($tsrs->p->mod, $r->d->nm, $r->d->ph); }
+						if ($r->f=='u'){
+							Brick::$builder->phrase->Set($tsrs->p->mod, $r->d->nm, $r->d->ph);
+						}
 					}
 					Brick::$builder->phrase->Save();
 				}
@@ -64,13 +70,13 @@ foreach ($ds->ts as $ts){
 		$rows = null;
 		switch ($ts->nm){
 			case 'message':
-				$rows = CMSQFeedback::Message(Brick::$db, $newMessageId);
+				$rows =  FeedbackQuery::Message(Brick::$db, $newMessageId);
 				break;
 			case 'messages':
-				$rows = CMSModFeedbackMan::MessageList(0, 1, 1);
+				$rows = $man->MessageList(0, 1, 1);
 				break;
 			case 'config':
-				if (CMSModFeedbackMan::IsAdmin()){
+				if ($man->IsAdminRole()){
 					Brick::$builder->phrase->PreloadByModule($tsrs->p->mod);
 					$rows = Brick::$builder->phrase->GetArray($tsrs->p->mod);
 				}

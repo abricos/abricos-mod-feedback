@@ -8,12 +8,16 @@ return array(
 ,
 		'js_data' => array(
 			"1" => "New Message",
-			"2" => "Received new
-Contact name: %1
-Phone: %2
-E-mail: %3
-Message:
-%4"
+			"2" => "
+<p>
+	Received new <br />
+	Contact name: {v#unm} <br />
+	Phone: {v#phone} <br />
+	E-mail: {v#email} <br />
+	Message: <br />
+	{v#text}
+</p>
+"
 		)
 
 	)
