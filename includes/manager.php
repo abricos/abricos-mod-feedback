@@ -64,9 +64,17 @@ class FeedbackManager extends Ab_ModuleManager {
 		
 		$emails = Brick::$builder->phrase->Get('feedback', 'adm_emails');
 		$arr = explode(',', $emails);
-		$subject = Brick::$builder->phrase->Get('feedback', 'adm_notify_subj');
-		$body = nl2br(Brick::$builder->phrase->Get('feedback', 'adm_notify'));
-		$body = sprintf($body, $data->fio, $data->phone, $data->email, $messageeml);
+		
+		$brick = Brick::$builder->LoadBrickS("feedback", "templates");
+		$v = $brick->param->var;
+		
+		$subject = $v['adm_notify_subj'];
+		$body = Brick::ReplaceVarByData($v['adm_notify'], array(
+			"unm" => $data->fio,
+			"phone" => $data->phone,
+			"email" => $data->email,
+			"text" => $messageeml
+		));
 		
 		foreach ($arr as $email){
 			$email = trim($email);
