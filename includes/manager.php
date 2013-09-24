@@ -51,13 +51,13 @@ class FeedbackManager extends Ab_ModuleManager {
 		$messageeml = $utmanager->JevixParser(nl2br($data->message));
 		$message = $utmanager->JevixParser($data->message);
 		$message = str_replace("<br/>", "", $message);
-		
+
 		if (empty($message)){ return 0; }
 
 		$userid = $this->userid;
 		
 		if ($userid == 0 && empty($data->email)){
-			return 0;
+			// return 0;
 		}
 		
 		$globalid = md5(TIMENOW);
