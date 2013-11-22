@@ -17,7 +17,7 @@ Component.requires = {
 };
 Component.entryPoint = function(){
 	
-	if (!Brick.env.user.isAdmin()){ return; }
+	if (Brick.Permission.check('user', '50') != 1){ return; }
 	
 	var cp = Brick.mod.user.cp;
 	
