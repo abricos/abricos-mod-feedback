@@ -90,54 +90,10 @@ Component.entryPoint = function(NS){
     };
     AppBase.prototype = {
         initializer: function(){
-            this.cacheClear();
-
-            this.listLoad(function(err){
-                this.get('initCallback')(err, this);
-            }, this);
-        },
-        cacheClear: function(){
-            this._cacheList = {};
+            this.get('initCallback')(null, this);
         },
         onAJAXError: function(err){
             Brick.mod.widget.notice.show(err.msg);
-        },
-        _treatAJAXResult: function(data){
-            data = data || {};
-            var ret = {};
-            /*
-             if (data.carousels){
-             var carouselListClass = this.get('carouselListClass');
-             ret.carouselList = new carouselListClass({
-             items: data.carousels.list
-             });
-             }
-             if (data.slides){
-             var slideListClass = this.get('slideListClass');
-             ret.slideList = new slideListClass({
-             carouselId: data.slides.carouselid,
-             items: data.slides.list
-             });
-             this._cacheList[data.slides.carouselid] = ret.slideList;
-             }
-             /**/
-            return ret;
-        },
-        listLoad: function(callback, context){
-            this.ajax({
-                'do': 'list'
-            }, this._onListLoad, {
-                arguments: {callback: callback, context: context}
-            });
-        },
-        _onListLoad: function(err, res, details){
-            var tRes = this._treatAJAXResult(res.data);
-
-            if (tRes.carouselList){
-                this.set('carouselList', tRes.carouselList);
-            }
-
-            details.callback.apply(details.context, [err, tRes.carouselList]);
         }
     };
     NS.AppBase = AppBase;
