@@ -1,4 +1,5 @@
 /*!
+ * Module for Abricos Platform (http://abricos.org)
  * Copyright 2008-2014 Alexander Kuzmin <roosit@abricos.org>
  * Licensed under the MIT license
  */
@@ -6,8 +7,6 @@
 var Component = new Brick.Component();
 Component.requires = {
     mod: [
-        {name: 'sys', files: ['panel.js', 'form.js']},
-        {name: 'widget', files: ['notice.js']},
         {name: '{C#MODNAME}', files: ['lib.js']}
     ]
 };
@@ -19,60 +18,41 @@ Component.entryPoint = function(NS){
 
         SYS = Brick.mod.sys;
 
-    var FeedbackForm = function(){
-    };
-    FeedbackForm.NAME = 'feedbackForm';
-    FeedbackForm.ATTRS = {
-        model: {
-            value: new NS.Feedback()
-        }
-    };
-    FeedbackForm.prototype = {
+    NS.FeedbackWidget = Y.Base.create('feedbackWidget', NS.AppWidget, [
+        SYS.Form,
+        SYS.FormAction
+    ], {
         initializer: function(){
-            var instance = this;
-            NS.initApp({
-                initCallback: function(){
-                    instance._onLoadManager();
-                }
+            this.publish('feedbackSended', {
+                defaultFn: this._defFeedbackSended
             });
         },
-        _onLoadManager: function(){
-            this.after('submitForm', this._submitFeedbackForm);
-        },
-        _submitFeedbackForm: function(e){
+        onSubmitFormAction: function(){
             this.set('waiting', true);
+
             var model = this.get('model'),
                 instance = this;
 
-            NS.appInstance.feedbackSend(model, function(err, result){
+            this.get('appInstance').feedbackSend(model, function(err, result){
                 instance.set('waiting', false);
-            }, this);
-
-            e.halt();
+                if (!err){
+                    instance.fire('feedbackSended');
+                }
+            });
+        },
+        _defFeedbackSended: function(){
         }
-    };
-    NS.FeedbackForm = FeedbackForm;
-
-    NS.FeedbackFormWidget = Y.Base.create('loginFormWidget', Y.Widget, [
-        SYS.Template,
-        SYS.Language,
-        SYS.Form,
-        SYS.FormAction,
-        SYS.WidgetWaiting,
-        NS.FeedbackForm
-    ], {
     }, {
         ATTRS: {
             component: {
                 value: COMPONENT
             },
-            templateBlockName: {
-                value: 'error'
-            },
-            render: {
+            useExistingWidget: {
                 value: true
+            },
+            model: {
+                value: new NS.Feedback()
             }
         }
     });
-
 };

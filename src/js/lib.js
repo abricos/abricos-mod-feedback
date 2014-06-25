@@ -38,18 +38,19 @@ Component.entryPoint = function(NS){
             Y.after(this._syncUIAppWidget, this, 'syncUI');
         },
         _syncUIAppWidget: function(){
-            var args = this._appWidgetArguments,
-                tData = {};
+            if (!this.get('useExistingWidget')){
+                var args = this._appWidgetArguments,
+                    tData = {};
 
-            if (Y.Lang.isFunction(this.buildTData)){
-                tData = this.buildTData.apply(this, args);
+                if (Y.Lang.isFunction(this.buildTData)){
+                    tData = this.buildTData.apply(this, args);
+                }
+
+                var bBox = this.get(BOUNDING_BOX),
+                    defTName = this.template.cfg.defTName;
+
+                bBox.setHTML(this.template.replace(defTName, tData));
             }
-
-            var bBox = this.get(BOUNDING_BOX),
-                defTName = this.template.cfg.defTName;
-
-            bBox.setHTML(this.template.replace(defTName, tData));
-
             this.set(WAITING, true);
 
             var instance = this;
@@ -76,6 +77,9 @@ Component.entryPoint = function(NS){
             },
             appInstance: {
                 values: null
+            },
+            useExistingWidget: {
+                value: false
             }
         }
     });
@@ -94,6 +98,40 @@ Component.entryPoint = function(NS){
         },
         onAJAXError: function(err){
             Brick.mod.widget.notice.show(err.msg);
+        },
+        _treatAJAXResult: function(data){
+            data = data || {};
+            var ret = {};
+            /*
+             if (data.carousels){
+             var carouselListClass = this.get('carouselListClass');
+             ret.carouselList = new carouselListClass({
+             items: data.carousels.list
+             });
+             }
+             if (data.slides){
+             var slideListClass = this.get('slideListClass');
+             ret.slideList = new slideListClass({
+             carouselId: data.slides.carouselid,
+             items: data.slides.list
+             });
+             this._cacheList[data.slides.carouselid] = ret.slideList;
+             }
+             /**/
+            return ret;
+        },
+        _defaultAJAXCallback: function(err, res, details){
+            var tRes = this._treatAJAXResult(res.data);
+
+            details.callback.apply(details.context, [err, tRes]);
+        },
+        feedbackSend: function(feedback, callback, context){
+            this.ajax({
+                'do': 'feedbacksend',
+                'savedata': feedback.toJSON()
+            }, this._defaultAJAXCallback, {
+                arguments: {callback: callback, context: context}
+            });
         }
     };
     NS.AppBase = AppBase;

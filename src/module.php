@@ -34,12 +34,12 @@ class FeedbackModule extends Ab_Module {
 	}
 	
 	/**
-	 * @return FeedbackManager
+	 * @return FeedbackModuleManager
 	 */
 	public function GetManager(){
 		if (is_null($this->_manager)){
 			require_once 'includes/manager.php';
-			$this->_manager = new FeedbackManager($this);
+			$this->_manager = new FeedbackModuleManager($this);
 		}
 		return $this->_manager;
 	}

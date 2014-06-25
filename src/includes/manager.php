@@ -6,19 +6,22 @@
  * @author Alexander Kuzmin <roosit@abricos.org>
  */
 
+require_once 'classes/structure.php';
 require_once 'dbquery.php';
 
-class FeedbackManager extends Ab_ModuleManager {
+class FeedbackModuleManager extends Ab_ModuleManager {
 	
 	/**
-	 * @var FeedbackManager
+	 * @var FeedbackModuleManager
 	 */
 	public static $instance = null;
+
+    private $_feedbackManager = null;
 	
 	public function __construct($module){
 		parent::__construct($module);
 	
-		FeedbackManager::$instance = $this;
+		FeedbackModuleManager::$instance = $this;
 	}
 	
 	public function IsAdminRole(){
@@ -34,100 +37,58 @@ class FeedbackManager extends Ab_ModuleManager {
 		if ($this->IsWriteRole()){ return true; }
 		return $this->IsRoleEnable(FeedbackAction::VIEW);
 	}
-	
-	/**
-	 * Добавить сообщение от пользователя и отправить уведомление администратору сайта
-	 * 
-	 * @static
-	 * @param object $data данные сообщения 
-	 * @return integer идентификатор нового сообщения
-	 */
-	public function MessageAppend($data){
-		if (!$this->IsWriteRole()){ return; }
-		
-		$utmanager = Abricos::TextParser();
 
-		$utmanager->jevix->cfgSetAutoBrMode(true);
-		$messageeml = $utmanager->JevixParser(nl2br($data->message));
-		$message = $utmanager->JevixParser($data->message);
-		$message = str_replace("<br/>", "", $message);
+    /**
+     * @return FeedbackManager
+     */
+    public function GetFeedbackManager() {
+        if (empty($this->_feedbackManager)) {
+            require_once 'classes/feedback.php';
+            $this->_feedbackManager = new FeedbackManager($this);
+        }
+        return $this->_feedbackManager;
+    }
 
-		if (empty($message)){ return 0; }
+    public function TreatResult($res) {
+        $ret = new stdClass();
+        $ret->err = 0;
 
-		$userid = $this->userid;
-		
-		if ($userid == 0 && empty($data->email)){
-			// return 0;
-		}
-		
-		$globalid = md5(TIMENOW);
-		
-		$emails = Brick::$builder->phrase->Get('feedback', 'adm_emails');
-		$arr = explode(',', $emails);
-		
-		$brick = Brick::$builder->LoadBrickS("feedback", "templates");
-		$v = $brick->param->var;
-		
-		$subject = $v['adm_notify_subj'];
-		$body = Brick::ReplaceVarByData($v['adm_notify'], array(
-			"unm" => $data->fio,
-			"phone" => $data->phone,
-			"email" => $data->email,
-			"text" => $messageeml
-		));
-		
-		foreach ($arr as $email){
-			$email = trim($email);
-			if (empty($email)){ continue; }
-			
-			Abricos::Notify()->SendMail($email, $subject, $body);
-		}
-		
-		return FeedbackQuery::MessageAppend(Brick::$db, $globalid, $userid, $data->fio, $data->phone, $data->email, $message, $data->owner, $data->ownerparam);
-	}
-	
-	/**
-	 * Получить список сообщений из базы
-	 * 
-	 * @static
-	 * @param integer $status статус сообщения, 0 - новое, 1 - сообщения на которые был дан ответ
-	 * @param integer $page номер страницы
-	 * @param integer $limit кол-во сообщений на страницу
-	 * @return integer указатель на результат SQL запроса
-	 */
-	public function MessageList($status, $page, $limit){
-		if (!$this->IsAdminRole()){ return null; }
-		return FeedbackQuery::MessageList(Brick::$db, $status, $page, $limit);
-	}
-	
-	/**
-	 * Удалить сообщение из базы
-	 * 
-	 * @static
-	 * @param integer $messageid идентификатор сообщения
-	 */
-	public function MessageRemove($messageid){
-		if (!$this->IsAdminRole()){ return null; }
-		FeedbackQuery::MessageRemove(Brick::$db, $messageid);
-	}
-	
-	/**
-	 * Ответить на сообщение, занеся ответ в базу и отправив email с ответом пользователю
-	 * 
-	 * @static
-	 * @param object $data данные сообщения и текст ответа
-	 */
-	public function Reply($data){
-		if (!$this->IsAdminRole()){ return null; }
-				
-		$messageid = $data->id;
-		$userid = Abricos::$user->info['userid'];
-		$body = nl2br($data->rp_body);
+        if (is_integer($res)) {
+            $ret->err = $res;
+        } else if (is_object($res)) {
+            $ret = $res;
+        }
+        $ret->err = intval($ret->err);
 
-		Abricos::Notify()->SendMail($data->ml, "Re: ".Brick::$builder->phrase->Get('sys', 'site_name'), $body );
-		
-		FeedbackQuery::Reply(Brick::$db, $messageid, $userid, $body);
-	}
+        return $ret;
+    }
+
+    public function AJAX($d) {
+        $ret = $this->GetFeedbackManager()->AJAX($d);
+
+        if (empty($ret)) {
+            $ret = new stdClass();
+            $ret->err = 500;
+        }
+
+        return $ret;
+    }
+
+    public function Bos_MenuData() {
+        if (!$this->IsAdminRole()) {
+            return null;
+        }
+        $lng = $this->module->lang;
+        return [
+            [
+                "name" => "feedback",
+                "title" => $lng['bosmenu']['feedback'],
+                "icon" => "/modules/feedback/images/icon.gif",
+                "url" => "feedback/wspace/ws",
+                "parent" => "controlPanel"
+            ]
+        ];
+    }
 }
 
 ?>
