@@ -112,6 +112,7 @@ Component.entryPoint = function(NS){
         },
         cacheClear: function(){
             this._cacheFeedbackList = null;
+            this._cacheFeedback = {};
         },
         onAJAXError: function(err){
             Brick.mod.widget.notice.show(err.msg);
@@ -124,6 +125,16 @@ Component.entryPoint = function(NS){
                 var feedbackListClass = this.get('feedbackListClass');
                 ret.feedbackList = new feedbackListClass({
                     items: data.feedbacks.list
+                });
+            }
+            if (data.feedback){
+                var feedbackClass = this.get('feedbackClass');
+                ret.feedback = new feedbackClass(data.feedback);
+            }
+            if (data.replies){
+                var replyListClass = this.get('replyListClass');
+                ret.replyList = new replyListClass({
+                    items: data.replies.list
                 });
             }
             return ret;
@@ -148,6 +159,19 @@ Component.entryPoint = function(NS){
             }
             this.ajax({
                 'do': 'feedbacklist'
+            }, this._defaultAJAXCallback, {
+                arguments: {callback: callback, context: context}
+            });
+        },
+        feedbackLoad: function(feedbackId, callback, context){
+            var  feedbackData = this._cacheFeedback[feedbackId];
+            if (feedbackData){
+                callback.apply(context, [null, feedbackData]);
+                return;
+            }
+            this.ajax({
+                'do': 'feedback',
+                feedbackid: feedbackId
             }, this._defaultAJAXCallback, {
                 arguments: {callback: callback, context: context}
             });

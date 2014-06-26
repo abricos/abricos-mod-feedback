@@ -40,7 +40,7 @@ Component.entryPoint = function(NS){
             }
             this.set('waiting', true);
 
-            this.get('appInstance').feedbackListLoad(function(err, result){
+            this.get('appInstance').feedbackLoad(function(err, result){
                 this.set('waiting', false);
                 if (!err){
                     var feedbackId = this.get('feedbackId'),
