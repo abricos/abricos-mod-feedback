@@ -1,0 +1,74 @@
+<!--{widget}-->
+<form id="{i#id}" class="viewer">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+
+            <div class="row">
+                <div class="col-md-7">
+                    <h3 class="panel-title">
+                        <a href="#" data-click="feedback-list">Сообщение</a></span></h3>
+                </div>
+                <div class="col-md-5">
+                    <div class="btn-toolbar text-right">
+                        <span data-wait="show">
+                            <img src="/images/loading.gif"/> Загрузка...
+                        </span>
+
+                        <button type="button" class="btn btn-default btn-xs" data-click="feedback-reply"
+                                data-wait="disable">
+                            Ответить
+                        </button>
+                        <button type="button" class="btn btn-default btn-xs" data-click="feedback-delete"
+                                data-wait="disable">
+                            Удалить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+
+            <div id="{i#view}">
+                <dl class="dl-horizontal">
+                    <dt>Имя</dt>
+                    <dd id="{i#fldfio}"></dd>
+                    <dt>Телефон</dt>
+                    <dd id="{i#fldphone}"></dd>
+                    <dt>E-mail</dt>
+                    <dd id="{i#fldemail}"></dd>
+                    <dt>Сообщение</dt>
+                    <dd id="{i#fldmessage}"></dd>
+                </dl>
+            </div>
+
+            <div id="{i#reply}">
+                <hr/>
+
+                <div class="form-group">
+                    <dl class="dl-horizontal">
+                        <dt>
+                            <label for="{i#body}">Ответ</label>
+                        </dt>
+                        <dd>
+                            <textarea id="{i#body}" name="body" class="form-control" rows="4"
+                                      data-wait="disable"></textarea>
+                        </dd>
+                    </dl>
+                </div>
+
+                <div class="btn-toolbar text-right">
+                    <span data-wait="show">
+                        <img src="/images/loading.gif"/> Загрузка...
+                    </span>
+                    <button type="submit" data-click="reply-send" class="btn btn-default" data-wait="disable">
+                        Отправить
+                    </button>
+                    <button type="button" data-click="reply-cancel" class="btn btn-default" data-wait="disable">
+                        Отмена
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>

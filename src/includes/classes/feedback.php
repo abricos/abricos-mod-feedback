@@ -21,6 +21,8 @@ class FeedbackManager {
         switch ($d->do) {
             case "feedbacksend":
                 return $this->FeedbackSendToAJAX($d->savedata);
+            case "feedbacklist":
+                return $this->FeedbackListToAJAX();
         }
         return null;
     }
@@ -97,20 +99,34 @@ class FeedbackManager {
         return $ret;
     }
 
-    /**
-     * Получить список сообщений из базы
-     *
-     * @static
-     * @param integer $status статус сообщения, 0 - новое, 1 - сообщения на которые был дан ответ
-     * @param integer $page номер страницы
-     * @param integer $limit кол-во сообщений на страницу
-     * @return integer указатель на результат SQL запроса
-     */
-    public function MessageList($status, $page, $limit) {
-        if (!$this->manager->IsAdminRolw()) {
-            return null;
+    public function FeedbackListToAJAX($overResult = null){
+        $ret = !empty($overResult) ? $overResult : (new stdClass());
+        $ret->err = 0;
+
+        $result = $this->FeedbackList();
+        if (is_integer($result)) {
+            $ret->err = $result;
+        } else {
+            $ret->feedbacks = $result->ToAJAX();
         }
-        return FeedbackQuery::MessageList(Brick::$db, $status, $page, $limit);
+
+        return $ret;
+    }
+
+    /**
+     * Получить список сообщений
+     */
+    public function FeedbackList() {
+        if (!$this->manager->IsAdminRole()) {
+            return 403;
+        }
+
+        $list = new FeedbackList();
+        $rows = FeedbackQuery::MessageList($this->db);
+        while (($d = $this->db->fetch_array($rows))) {
+            $list->Add(new Feedback($d));
+        }
+        return $list;
     }
 
     /**
@@ -120,7 +136,7 @@ class FeedbackManager {
      * @param integer $messageid идентификатор сообщения
      */
     public function MessageRemove($messageid) {
-        if (!$this->manager->IsAdminRolw()) {
+        if (!$this->manager->IsAdminRole()) {
             return null;
         }
         FeedbackQuery::MessageRemove(Brick::$db, $messageid);
@@ -133,7 +149,7 @@ class FeedbackManager {
      * @param object $data данные сообщения и текст ответа
      */
     public function Reply($data) {
-        if (!$this->manager->IsAdminRolw()) {
+        if (!$this->manager->IsAdminRole()) {
             return null;
         }
 

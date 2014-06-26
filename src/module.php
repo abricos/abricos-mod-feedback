@@ -43,6 +43,10 @@ class FeedbackModule extends Ab_Module {
 		}
 		return $this->_manager;
 	}
+
+    public function Bos_IsMenu(){
+        return true;
+    }
 }
 
 class FeedbackAction {

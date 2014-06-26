@@ -1,95 +1,80 @@
-<!--{panel}--><div class='hd'>{#mod.feedback.manager.panel.1}</div>
-<div class='bd'>
-	<div id="{i#container}"></div>
-	<div style="text-align: right">
-		<input id="{i#bclose}" type="button" value="{#mod.feedback.manager.panel.2}" />
-	</div>
+<!--{widget}-->
+<div id="{i#id}" class="manager">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+
+            <div class="row">
+                <div class="col-md-7">
+                    <h3 class="panel-title">Сообщения пользователей</h3>
+                </div>
+                <div class="col-md-5">
+                    <div class="btn-toolbar text-right">
+                        <span data-wait="show">
+                            <img src="/images/loading.gif"/> Загрузка...
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="panel-body">
+            <div id="{i#list}"></div>
+        </div>
+    </div>
 </div>
-<!--{widget}--><div id="{i#id}" class="yui-navset">
-	<ul class="yui-nav">
-		<li class="selected"><a href="#{i#messages}"><em>{#mod.feedback.cp_manager.panel.hd1}</em></a></li>
-		<li><a href="#{i#config}"><em>{#mod.feedback.cp_manager.panel.hd2}</em></a></li>
-	</ul>            
-  <div class="yui-content">
-	  <div id="{i#messages}"></div>
-	  <div id="{i#config}"></div>
-	</div>
-</div>
-<!--{msglistwidget}--><div id='{i#table}'></div>
-<!--{msglisttable}--><table class="bk-table-def">
-	<thead>
-		<tr>
-			<th>{#mod.feedback.cp_message.table.date}</th>
-			<th>{#mod.feedback.cp_message.table.contact}</th>
-			<th>{#mod.feedback.cp_message.table.phone}</th>
-			<th>{#mod.feedback.cp_message.table.message}</th>
-			<th>{#mod.feedback.cp_message.table.src}</th>
-			<th></th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>{v#rows}</tbody>
+
+<!--{list}-->
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Имя</th>
+        <th>Телефон</th>
+        <th>E-mail</th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {v#rows}
+    </tbody>
 </table>
-<!--{msglistrowwait}--><tr valign="top">
-	<td colspan="7">{#mod.feedback.manager.msglistrowwait.1}</td>
+
+<!--{row}-->
+<tr>
+    <td>{v#id}</td>
+    <td>{v#fio}</td>
+    <td>{v#phone}</td>
+    <td>{v#email}</td>
+    <td>
+        <button type="button" class="btn btn-default btn-xs" data-click="feedback-open" data-id="{v#id}">
+            Открыть
+        </button>
+    </td>
+    <td>
+        <button type="button" class="btn btn-default btn-xs" data-click="feedback-reply" data-id="{v#id}">
+            Ответить
+        </button>
+    </td>
+    <td>
+        <button type="button" class="btn btn-default btn-xs" data-click="feedback-edit" data-id="{v#id}">
+            Править
+        </button>
+    </td>
+    <td>
+        <button id="{i#delete}-{v#id}" type="button" class="btn btn-default btn-xs" data-click="feedback-delete-show" data-id="{v#id}">
+            Удалить
+        </button>
+        <div id="{i#deletegroup}-{v#id}" style="display: none" class="btn-group">
+            <button type="button" class="btn btn-danger btn-xs" data-click="feedback-delete" data-id="{v#id}">
+                Удалить?
+            </button>
+            <button type="button" class="btn btn-default btn-xs" data-click="feedback-delete-cancel" data-id="{v#id}">
+                Отмена
+            </button>
+        </div>
+    </td>
 </tr>
-<!--{msglistrow}--><tr valign="top">
-	<td>{v#dl}</td>
-	<td>{v#fio}</td>
-	<td>{v#phn}</td>
-	<td>{v#msg}</td>
-	<td>{v#own}</td>
-	<td><a href="#" id="{i#view}-{v#id}">{#mod.feedback.cp_message.row.preview}</a></td>
-	<td><a href="#" id="{i#remove}-{v#id}">{#mod.feedback.cp_message.row.remove}</a></td>
-</tr>
-<!--{configwidget}--><div class="field linespace-1">
-	<h3>{#mod.feedback.cp_config.panel.hd}</h3>
-	<p>
-		<label id="{i#adm_emails}-lbl">{#mod.feedback.cp_config.panel.email}</label><br />
-		<input type="text" id="{i#adm_emails}" value="" style="width: 400px" />
-	</p>
-	<div style="display: none">
-		<h3>{#mod.feedback.cp_config.panel.tt}</h3>
-		<p>
-			<label id="{i#adm_notify_subj}-lbl">{#mod.feedback.cp_config.panel.subject}</label><br />
-			<input type="text" id="{i#adm_notify_subj}" value="" style="width: 400px" />
-		</p>
-		<p>
-			<label id="{i#adm_notify}-lbl">{#mod.feedback.cp_config.panel.body}</label><br />
-			<textarea id="{i#adm_notify}" style="width: 500px; height: 200px"></textarea>
-		</p>
-	</div>
-</div>
-<div class="buttons-top right">
-	<input id='{i#bsave}' type="button" value="{#mod.feedback.cp_config.panel.save}" />
-</div>
-<!--{view}--><div class='hd'>{#mod.feedback.cp_message.view.hd}</div>
-<div class='bd'>
-	<div class="field linespace-1">
-		<h3>{#mod.feedback.cp_message.view.num}<label id="{i#id}"></label></h3>
-		<p>{#mod.feedback.cp_message.view.date}<label id="{i#dl}"></label></p>
-		<p>{#mod.feedback.cp_message.view.fio}<label id="{i#fio}"></label></p>
-		<p>{#mod.feedback.cp_message.view.phone}<label id="{i#phn}"></label></p>
-		<textarea id="{i#msg}" style="width: 480px; height: 200px"></textarea>
-		
-	 	<div class="buttons right">
-			<input id="{i#breply}" type="button" value="{#mod.feedback.cp_message.view.reply}" />
-			<input id="{i#bcancel}" type="button" value="{#mod.feedback.cp_message.view.close}" />
-		</div>
-		 
-	</div>
-</div>
-<!--{reply}--><div class='hd'>{#mod.feedback.cp_message.reply.hd}</div>
-<div class='bd'>
-	<div class="field linespace-1">
-		<h3>{#mod.feedback.cp_message.reply.hd} №<label id="{i#id}"></label>{#mod.feedback.cp_message.reply.from}<label id="{i#dl}"></label></h3>
-		<p>{#mod.feedback.cp_message.reply.fio}<label id="{i#fio}"></label></p>
-		<p>{#mod.feedback.cp_message.reply.phone}<label id="{i#phn}"></label></p>
-		<textarea id="{i#msg}" style="width: 600px; height: 200px"></textarea>
-		
-	 	<div class="buttons right">
-			<input id="{i#breply}" type="button" value="{#mod.feedback.cp_message.reply.reply}" />
-			<input id="{i#bcancel}" type="button" value="{#mod.feedback.cp_message.reply.cancel}" />
-		</div>
-	</div>
-</div>

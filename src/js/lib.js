@@ -24,8 +24,18 @@ Component.entryPoint = function(NS){
         SYS = Brick.mod.sys;
 
     NS.URL = {
+        ws: "#app={C#MODNAMEURI}/wspace/ws/",
+        manager: {
+            view: function(){
+                return NS.URL.ws + 'manager/ManagerWidget/'
+            }
+        },
+        feedback: {
+            view: function(feedbackId){
+                return NS.URL.ws + 'viewer/FeedbackViewWidget/'+feedbackId+'/';
+            }
+        }
     };
-
     NS.AppWidget = Y.Base.create('appWidget', Y.Widget, [
         SYS.Language,
         SYS.Template,
@@ -87,6 +97,9 @@ Component.entryPoint = function(NS){
     var AppBase = function(){
     };
     AppBase.ATTRS = {
+        feedbackListClass: {
+            value: NS.FeedbackList
+        },
         initCallback: {
             value: function(){
             }
@@ -94,7 +107,11 @@ Component.entryPoint = function(NS){
     };
     AppBase.prototype = {
         initializer: function(){
+            this.cacheClear();
             this.get('initCallback')(null, this);
+        },
+        cacheClear: function(){
+            this._cacheFeedbackList = null;
         },
         onAJAXError: function(err){
             Brick.mod.widget.notice.show(err.msg);
@@ -102,22 +119,13 @@ Component.entryPoint = function(NS){
         _treatAJAXResult: function(data){
             data = data || {};
             var ret = {};
-            /*
-             if (data.carousels){
-             var carouselListClass = this.get('carouselListClass');
-             ret.carouselList = new carouselListClass({
-             items: data.carousels.list
-             });
-             }
-             if (data.slides){
-             var slideListClass = this.get('slideListClass');
-             ret.slideList = new slideListClass({
-             carouselId: data.slides.carouselid,
-             items: data.slides.list
-             });
-             this._cacheList[data.slides.carouselid] = ret.slideList;
-             }
-             /**/
+
+            if (data.feedbacks){
+                var feedbackListClass = this.get('feedbackListClass');
+                ret.feedbackList = new feedbackListClass({
+                    items: data.feedbacks.list
+                });
+            }
             return ret;
         },
         _defaultAJAXCallback: function(err, res, details){
@@ -129,6 +137,17 @@ Component.entryPoint = function(NS){
             this.ajax({
                 'do': 'feedbacksend',
                 'savedata': feedback.toJSON()
+            }, this._defaultAJAXCallback, {
+                arguments: {callback: callback, context: context}
+            });
+        },
+        feedbackListLoad: function(callback, context){
+            if (this._cacheFeedbackList){
+                callback.apply(context, [null, this._cacheFeedbackList]);
+                return;
+            }
+            this.ajax({
+                'do': 'feedbacklist'
             }, this._defaultAJAXCallback, {
                 arguments: {callback: callback, context: context}
             });

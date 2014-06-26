@@ -33,4 +33,23 @@ Component.entryPoint = function(NS){
         model: NS.Feedback
     });
 
+    NS.Reply = Y.Base.create('reply', Y.Model, [ ], {
+    }, {
+        ATTRS: {
+            userid: {
+                value: 0
+            },
+            messageid: {
+                value: 0
+            },
+            body: {
+                value: ''
+            },
+            dateline: {
+                value: 0
+            }
+        }
+    });
+
+
 };

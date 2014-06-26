@@ -48,22 +48,21 @@ class FeedbackQuery {
 		$db->query_write($sql);
 	}
 	
-	public static function MessageList(Ab_Database $db, $status, $page, $limit){
+	public static function MessageList(Ab_Database $db){
 		$sql = "
 			SELECT
 				messageid as id,
-				userid as uid,
+				userid,
 				fio,
-				phone as phn,
-				email as ml,
-				message as msg,
-				dateline as dl,
-				status as st,
-				owner as own,
-				ownerparam as ownprm
+				phone,
+				email,
+				message,
+				dateline,
+				status,
+				owner,
+				ownerparam
 			FROM ".$db->prefix."fb_message
-			WHERE status=".bkint($status)."
-			ORDER BY dl DESC
+			ORDER BY dateline DESC
 		";
 		return $db->query_read($sql);
 	}
