@@ -23,6 +23,8 @@ class FeedbackManager {
                 return $this->FeedbackSendToAJAX($d->savedata);
             case "feedbacklist":
                 return $this->FeedbackListToAJAX();
+            case "feedback":
+                return $this->FeedbackToAJAX($d->feedbackid);
         }
         return null;
     }
@@ -122,12 +124,48 @@ class FeedbackManager {
         }
 
         $list = new FeedbackList();
-        $rows = FeedbackQuery::MessageList($this->db);
+        $rows = FeedbackQuery::FeedbackList($this->db);
         while (($d = $this->db->fetch_array($rows))) {
             $list->Add(new Feedback($d));
         }
         return $list;
     }
+
+    public function FeedbackToAJAX($feedbackId, $overResult){
+        $ret = !empty($overResult) ? $overResult : (new stdClass());
+        $ret->err = 0;
+
+        $result = $this->Feedback($feedbackId);
+        if (is_integer($result)) {
+            $ret->err = $result;
+        } else {
+            $ret->feedback = $result->ToAJAX();
+        }
+
+        return $ret;
+    }
+
+    public function Feedback($feedbackId){
+        if (!$this->manager->IsAdminRole()){
+            return 403;
+        }
+        $row = FeedbackQuery::Feedback($this->db, $feedbackId);
+        if (empty($row)){
+            return 404;
+        }
+
+        $feedback = new Feedback($row);
+
+        $list = new FeedbackReplyList();
+        $rows = FeedbackQuery::ReplyList($this->db, $feedbackId);
+        while (($d = $this->db->fetch_array($rows))) {
+            $list->Add(new FeedbackReply($d));
+        }
+        $feedback->replyList = $list;
+
+        return $feedback;
+    }
+
 
     /**
      * Удалить сообщение из базы

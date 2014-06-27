@@ -32,7 +32,7 @@ Component.entryPoint = function(NS){
         },
         feedback: {
             view: function(feedbackId){
-                return NS.URL.ws + 'viewer/FeedbackViewWidget/'+feedbackId+'/';
+                return NS.URL.ws + 'viewer/FeedbackViewWidget/' + feedbackId + '/';
             }
         }
     };
@@ -112,7 +112,6 @@ Component.entryPoint = function(NS){
         },
         cacheClear: function(){
             this._cacheFeedbackList = null;
-            this._cacheFeedback = {};
         },
         onAJAXError: function(err){
             Brick.mod.widget.notice.show(err.msg);
@@ -126,8 +125,28 @@ Component.entryPoint = function(NS){
                 ret.feedbackList = new feedbackListClass({
                     items: data.feedbacks.list
                 });
+                this._cacheFeedbackList = ret.feedbackList;
             }
+            var feedbackList = this._cacheFeedbackList;
+            if (feedbackList){
+                ret.feedbackList = feedbackList;
+            }
+
+            var feedback;
             if (data.feedback){
+
+                if (feedbackList){
+                    feedback = feedbackList.getById(data.feedback.id);
+                }
+
+                if (feedback){
+                    feedback.setAttrs(data.feedback);
+                } else {
+                    var feedbackClass = this.get('feedbackClass');
+                    feedback = new feedbackClass(data.feedback);
+                }
+                ret.feedback = feedback;
+
                 var feedbackClass = this.get('feedbackClass');
                 ret.feedback = new feedbackClass(data.feedback);
             }
@@ -164,11 +183,13 @@ Component.entryPoint = function(NS){
             });
         },
         feedbackLoad: function(feedbackId, callback, context){
-            var  feedbackData = this._cacheFeedback[feedbackId];
+            /*
+            var feedbackData = this._cacheFeedback[feedbackId];
             if (feedbackData){
                 callback.apply(context, [null, feedbackData]);
                 return;
             }
+            /**/
             this.ajax({
                 'do': 'feedback',
                 feedbackid: feedbackId

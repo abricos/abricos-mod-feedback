@@ -43,9 +43,7 @@ Component.entryPoint = function(NS){
             this.get('appInstance').feedbackLoad(function(err, result){
                 this.set('waiting', false);
                 if (!err){
-                    var feedbackId = this.get('feedbackId'),
-                        feedback = result.feedbackList.getById(feedbackId);
-                    this.set('feedback', feedback);
+                    this.set('feedback', result.feedback);
                 }
             }, this);
         },

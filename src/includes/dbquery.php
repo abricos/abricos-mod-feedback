@@ -48,7 +48,7 @@ class FeedbackQuery {
 		$db->query_write($sql);
 	}
 	
-	public static function MessageList(Ab_Database $db){
+	public static function FeedbackList(Ab_Database $db){
 		$sql = "
 			SELECT
 				messageid as id,
@@ -58,27 +58,45 @@ class FeedbackQuery {
 				email,
 				message,
 				dateline,
-				status,
-				owner,
-				ownerparam
+				status
 			FROM ".$db->prefix."fb_message
 			ORDER BY dateline DESC
 		";
 		return $db->query_read($sql);
 	}
 	
-	public static function Message(Ab_Database $db, $messageid){
+	public static function Feedback(Ab_Database $db, $feedbackId){
 		$sql = "
 			SELECT
-				a.messageid as id,
-				a.*
-			FROM ".$db->prefix."fb_message a
-			WHERE a.messageid=".bkint($messageid)."
+                messageid as id,
+				userid,
+				fio,
+				phone,
+				email,
+				message,
+				dateline,
+				status
+			FROM ".$db->prefix."fb_message
+			WHERE messageid=".bkint($feedbackId)."
 			LIMIT 1
 		";
-		return $db->query_read($sql);
+		return $db->query_first($sql);
 	}
-	
+
+    public static function ReplyList(Ab_Database $db, $feedbackId){
+        $sql = "
+			SELECT
+				replyid as id,
+				userid,
+				body,
+				dateline
+			FROM ".$db->prefix."fb_message
+			WHERE messageid=".bkint($feedbackId)."
+			ORDER BY dateline DESC
+		";
+        return $db->query_read($sql);
+    }
+
 	public static function MessageRemove(Ab_Database $db, $messageid){
 		$sql = "
 			DELETE FROM ".$db->prefix."fb_message

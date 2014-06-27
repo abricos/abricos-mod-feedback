@@ -12,6 +12,9 @@ Component.entryPoint = function(NS){
     var Y = Brick.YUI;
 
     NS.Feedback = Y.Base.create('feedback', Y.Model, [ ], {
+        initializer: function(){
+            this.replyList = null;
+        }
     }, {
         ATTRS: {
             fio: {

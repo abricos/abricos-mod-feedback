@@ -6,6 +6,12 @@ class Feedback extends AbricosItem {
     public $phone;
     public $email;
     public $message;
+    public $dateline;
+
+    /**
+     * @var FeedbackReplyList
+     */
+    public $replyList = null;
 
     public function __construct($d) {
         parent::__construct($d);
@@ -14,6 +20,7 @@ class Feedback extends AbricosItem {
         $this->phone = strval($d['phone']);
         $this->email = strval($d['email']);
         $this->message = strval($d['message']);
+        $this->dateline = intval($d['dateline']);
     }
 
     public function ToAJAX() {
@@ -22,6 +29,11 @@ class Feedback extends AbricosItem {
         $ret->phone = $this->phone;
         $ret->email = $this->email;
         $ret->message = $this->message;
+        $ret->dateline = $this->dateline;
+
+        if (!empty($this->replyList)){
+            $ret->replies = $this->replyList->ToAJAX();
+        }
 
         return $ret;
     }
@@ -29,5 +41,30 @@ class Feedback extends AbricosItem {
 
 class FeedbackList extends AbricosList {
 }
+
+class FeedbackReply extends AbricosItem {
+
+    public $message;
+    public $dateline;
+
+    public function __construct($d) {
+        parent::__construct($d);
+
+        $this->message = strval($d['message']);
+        $this->dateline = intval($d['dateline']);
+    }
+
+    public function ToAJAX() {
+        $ret = parent::ToAJAX();
+        $ret->message = $this->message;
+        $ret->dateline = $this->dateline;
+
+        return $ret;
+    }
+}
+
+class FeedbackReplyList extends AbricosList {
+}
+
 
 ?>
