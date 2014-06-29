@@ -90,7 +90,7 @@ class FeedbackQuery {
 				userid,
 				body,
 				dateline
-			FROM ".$db->prefix."fb_message
+			FROM ".$db->prefix."fb_reply
 			WHERE messageid=".bkint($feedbackId)."
 			ORDER BY dateline DESC
 		";

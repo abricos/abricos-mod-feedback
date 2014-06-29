@@ -40,9 +40,12 @@ Component.entryPoint = function(NS){
             }
             this.set('waiting', true);
 
-            this.get('appInstance').feedbackLoad(function(err, result){
+            var feedbackId = this.get('feedbackId');
+
+            this.get('appInstance').feedbackLoad(feedbackId, function(err, result){
                 this.set('waiting', false);
                 if (!err){
+                    console.log(result.feedback.replyList);
                     this.set('feedback', result.feedback);
                 }
             }, this);
@@ -74,7 +77,7 @@ Component.entryPoint = function(NS){
             }
 
             var model = new NS.Reply({
-                messageid: attrs.id,
+                id: attrs.id,
                 body: ''
             });
             this.set('model', model);

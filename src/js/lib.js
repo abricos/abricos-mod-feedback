@@ -100,6 +100,15 @@ Component.entryPoint = function(NS){
         feedbackListClass: {
             value: NS.FeedbackList
         },
+        feedbackClass: {
+            value: NS.Feedback
+        },
+        replyClass: {
+            value: NS.Reply
+        },
+        replyListClass: {
+            value: NS.ReplyList
+        },
         initCallback: {
             value: function(){
             }
@@ -147,15 +156,14 @@ Component.entryPoint = function(NS){
                 }
                 ret.feedback = feedback;
 
-                var feedbackClass = this.get('feedbackClass');
-                ret.feedback = new feedbackClass(data.feedback);
+                if (data.feedback.replies){
+                    var replyListClass = this.get('replyListClass');
+                    feedback.replyList = new replyListClass({
+                        items: data.feedback.replies.list
+                    });
+                }
             }
-            if (data.replies){
-                var replyListClass = this.get('replyListClass');
-                ret.replyList = new replyListClass({
-                    items: data.replies.list
-                });
-            }
+
             return ret;
         },
         _defaultAJAXCallback: function(err, res, details){
@@ -183,16 +191,9 @@ Component.entryPoint = function(NS){
             });
         },
         feedbackLoad: function(feedbackId, callback, context){
-            /*
-            var feedbackData = this._cacheFeedback[feedbackId];
-            if (feedbackData){
-                callback.apply(context, [null, feedbackData]);
-                return;
-            }
-            /**/
             this.ajax({
                 'do': 'feedback',
-                feedbackid: feedbackId
+                'feedbackid': feedbackId
             }, this._defaultAJAXCallback, {
                 arguments: {callback: callback, context: context}
             });

@@ -42,9 +42,6 @@ Component.entryPoint = function(NS){
             userid: {
                 value: 0
             },
-            messageid: {
-                value: 0
-            },
             body: {
                 value: ''
             },
@@ -54,5 +51,8 @@ Component.entryPoint = function(NS){
         }
     });
 
+    NS.ReplyList = Y.Base.create('replyList', Y.ModelList, [], {
+        model: NS.Reply
+    });
 
 };

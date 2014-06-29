@@ -131,7 +131,7 @@ class FeedbackManager {
         return $list;
     }
 
-    public function FeedbackToAJAX($feedbackId, $overResult){
+    public function FeedbackToAJAX($feedbackId, $overResult = null){
         $ret = !empty($overResult) ? $overResult : (new stdClass());
         $ret->err = 0;
 
