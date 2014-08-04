@@ -198,6 +198,14 @@ Component.entryPoint = function(NS){
                 arguments: {callback: callback, context: context}
             });
         },
+        feedbackDelete: function(feedbackId, callback, context){
+            this.ajax({
+                'do': 'feedbackdelete',
+                'feedbackid': feedbackId
+            }, this._defaultAJAXCallback, {
+                arguments: {callback: callback, context: context}
+            });
+        },
         replySend: function(feedbackId, reply, callback, context){
             this.ajax({
                 'do': 'replysend',

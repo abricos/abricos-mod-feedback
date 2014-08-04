@@ -75,24 +75,43 @@ Component.entryPoint = function(NS){
                 }
             }
 
+            var isReply = false, lst = "";
+            feedback.replyList.each(function(reply){
+                isReply = true;
+                lst += tp.replace('reply', reply.toJSON());
+            });
+
+
+            Y.one(tp.gel('replylist')).setHTML(lst);
+
             var model = new NS.Reply({
                 id: attrs.id,
                 body: ''
             });
             this.set('model', model);
+
+            if (isReply){
+                Y.one(tp.gel('bshowreply')).hide();
+            } else {
+                this.showFeedbackReply();
+            }
         },
         onClick: function(e){
             switch (e.dataClick) {
                 case 'feedback-reply':
                     this.showFeedbackReply();
                     return true;
-                /*
-                 case 'reply-send':
-                 this.sendFeedbackReply();
-                 return true;
-                 /**/
                 case 'reply-cancel':
                     this.hideFeedbackReply();
+                    return true;
+                case 'feedback-showdelete':
+                    this.showFeedbackDeleteButtons();
+                    return true;
+                case 'feedback-delete-cancel':
+                    this.hideFeedbackDeleteButtons();
+                    return true;
+                case 'feedback-delete':
+                    this.feedbackDelete();
                     return true;
             }
         },
@@ -118,6 +137,28 @@ Component.entryPoint = function(NS){
                     this.set('feedback', result.feedback);
                 }
             }, this);
+        },
+        showFeedbackDeleteButtons: function(){
+            var tp = this.template;
+            Y.one(tp.gel('bshowfbdelete')).hide();
+            Y.one(tp.gel('fbdelete')).show();
+        },
+        hideFeedbackDeleteButtons: function(){
+            var tp = this.template;
+            Y.one(tp.gel('bshowfbdelete')).show();
+            Y.one(tp.gel('fbdelete')).hide();
+        },
+        feedbackDelete: function(){
+            this.set('waiting', true);
+
+            var feedbackId = this.get('feedbackId');
+
+            this.get('appInstance').feedbackDelete(feedbackId, function(err, result){
+                this.set('waiting', false);
+                if (!err){
+                    console.log('delete');
+                }
+            }, this);
         }
     }, {
         ATTRS: {
@@ -125,7 +166,7 @@ Component.entryPoint = function(NS){
                 value: COMPONENT
             },
             templateBlockName: {
-                value: 'widget'
+                value: 'widget,reply'
             }
         }
     });

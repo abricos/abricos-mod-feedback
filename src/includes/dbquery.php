@@ -88,7 +88,7 @@ class FeedbackQuery {
 			SELECT
 				replyid as id,
 				userid,
-				body,
+				body as message,
 				dateline
 			FROM ".$db->prefix."fb_reply
 			WHERE messageid=".bkint($feedbackId)."

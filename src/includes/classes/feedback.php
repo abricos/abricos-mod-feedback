@@ -182,7 +182,7 @@ class FeedbackManager {
             return $feedback;
         }
 
-        $body = nl2br($sd->body);
+        $body = nl2br($sd->message);
 
         Abricos::Notify()->SendMail($feedback->email,
             "Re: ".Brick::$builder->phrase->Get('sys', 'site_name'),

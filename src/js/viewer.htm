@@ -9,19 +9,30 @@
                         <a href="#" data-click="feedback-list">Сообщение</a></span></h3>
                 </div>
                 <div class="col-md-5">
-                    <div id="{i#bgroup}" class="btn-toolbar text-right">
+                    <div id="{i#bgroup}" class="text-right">
                         <span data-wait="show">
                             <img src="/images/loading.gif"/> Загрузка...
                         </span>
 
-                        <button type="button" class="btn btn-default btn-xs" data-click="feedback-reply"
+                        <button id="{i#bshowreply}" type="button" class="btn btn-default btn-xs"
+                                data-click="feedback-reply"
                                 data-wait="disable">
                             Ответить
                         </button>
-                        <button type="button" class="btn btn-default btn-xs" data-click="feedback-delete"
+                        <button id="{i#bshowfbdelete}" type="button" class="btn btn-default btn-xs"
+                                data-click="feedback-showdelete"
                                 data-wait="disable">
                             Удалить
                         </button>
+
+                        <span id="{i#fbdelete}" class="btn-group" style="display: none">
+                            <button type="button" class="btn btn-danger btn-xs" data-click="feedback-delete" data-wait="disable">
+                                Удалить?
+                            </button>
+                            <button type="button" class="btn btn-default btn-xs" data-click="feedback-delete-cancel" data-wait="disable">
+                                Отмена
+                            </button>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -41,16 +52,18 @@
                 </dl>
             </div>
 
+            <div id="{i#replylist}"></div>
+
             <div id="{i#reply}" style="display: none">
                 <hr/>
 
                 <div class="form-group">
                     <dl class="dl-horizontal">
                         <dt>
-                            <label for="{i#body}">Ответ</label>
+                            <label for="{i#message}">Ответ</label>
                         </dt>
                         <dd>
-                            <textarea id="{i#body}" name="body" class="form-control" rows="4"
+                            <textarea id="{i#message}" name="message" class="form-control" rows="4"
                                       data-wait="disable"></textarea>
                         </dd>
                     </dl>
@@ -72,3 +85,18 @@
         </div>
     </div>
 </form>
+
+<!--{reply}-->
+<div class="reply-view">
+    <hr/>
+    <div class="form-group">
+        <dl class="dl-horizontal">
+            <dt>
+                <label>Ответ</label>
+            </dt>
+            <dd>
+                {v#message}
+            </dd>
+        </dl>
+    </div>
+</div>

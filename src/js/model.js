@@ -42,7 +42,7 @@ Component.entryPoint = function(NS){
             userid: {
                 value: 0
             },
-            body: {
+            message: {
                 value: ''
             },
             dateline: {
