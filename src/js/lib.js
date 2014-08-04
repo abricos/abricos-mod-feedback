@@ -197,6 +197,15 @@ Component.entryPoint = function(NS){
             }, this._defaultAJAXCallback, {
                 arguments: {callback: callback, context: context}
             });
+        },
+        replySend: function(feedbackId, reply, callback, context){
+            this.ajax({
+                'do': 'replysend',
+                'feedbackid': feedbackId,
+                'savedata': reply.toJSON()
+            }, this._defaultAJAXCallback, {
+                arguments: {callback: callback, context: context}
+            });
         }
     };
     NS.AppBase = AppBase;

@@ -25,6 +25,8 @@ class FeedbackManager {
                 return $this->FeedbackListToAJAX();
             case "feedback":
                 return $this->FeedbackToAJAX($d->feedbackid);
+            case "replysend":
+                return $this->ReplySendToAJAX($d->feedbackid, $d->savedata);
         }
         return null;
     }
@@ -101,7 +103,7 @@ class FeedbackManager {
         return $ret;
     }
 
-    public function FeedbackListToAJAX($overResult = null){
+    public function FeedbackListToAJAX($overResult = null) {
         $ret = !empty($overResult) ? $overResult : (new stdClass());
         $ret->err = 0;
 
@@ -131,7 +133,7 @@ class FeedbackManager {
         return $list;
     }
 
-    public function FeedbackToAJAX($feedbackId, $overResult = null){
+    public function FeedbackToAJAX($feedbackId, $overResult = null) {
         $ret = !empty($overResult) ? $overResult : (new stdClass());
         $ret->err = 0;
 
@@ -145,12 +147,12 @@ class FeedbackManager {
         return $ret;
     }
 
-    public function Feedback($feedbackId){
-        if (!$this->manager->IsAdminRole()){
+    public function Feedback($feedbackId) {
+        if (!$this->manager->IsAdminRole()) {
             return 403;
         }
         $row = FeedbackQuery::Feedback($this->db, $feedbackId);
-        if (empty($row)){
+        if (empty($row)) {
             return 404;
         }
 
@@ -166,6 +168,31 @@ class FeedbackManager {
         return $feedback;
     }
 
+    public function ReplySendToAJAX($feedbackId, $sd) {
+        $res = $this->ReplySend($feedbackId, $sd);
+        $ret = $this->manager->TreatResult($res);
+        return $ret;
+    }
+
+    public function ReplySend($feedbackId, $sd) {
+
+        $feedback = $this->Feedback($feedbackId);
+
+        if (is_integer($feedback)) {
+            return $feedback;
+        }
+
+        $body = nl2br($sd->body);
+
+        Abricos::Notify()->SendMail($feedback->email,
+            "Re: ".Brick::$builder->phrase->Get('sys', 'site_name'),
+            $body
+        );
+
+        FeedbackQuery::Reply($this->db, $feedbackId, Abricos::$user->id, $body);
+
+        return $this->Feedback($feedbackId);
+    }
 
     /**
      * Удалить сообщение из базы
@@ -180,25 +207,6 @@ class FeedbackManager {
         FeedbackQuery::MessageRemove(Brick::$db, $messageid);
     }
 
-    /**
-     * Ответить на сообщение, занеся ответ в базу и отправив email с ответом пользователю
-     *
-     * @static
-     * @param object $data данные сообщения и текст ответа
-     */
-    public function Reply($data) {
-        if (!$this->manager->IsAdminRole()) {
-            return null;
-        }
-
-        $messageid = $data->id;
-        $userid = Abricos::$user->info['userid'];
-        $body = nl2br($data->rp_body);
-
-        Abricos::Notify()->SendMail($data->ml, "Re: ".Brick::$builder->phrase->Get('sys', 'site_name'), $body);
-
-        FeedbackQuery::Reply(Brick::$db, $messageid, $userid, $body);
-    }
 }
 
 ?>

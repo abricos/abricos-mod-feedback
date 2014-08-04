@@ -9,7 +9,7 @@
                         <a href="#" data-click="feedback-list">Сообщение</a></span></h3>
                 </div>
                 <div class="col-md-5">
-                    <div class="btn-toolbar text-right">
+                    <div id="{i#bgroup}" class="btn-toolbar text-right">
                         <span data-wait="show">
                             <img src="/images/loading.gif"/> Загрузка...
                         </span>
@@ -41,7 +41,7 @@
                 </dl>
             </div>
 
-            <div id="{i#reply}">
+            <div id="{i#reply}" style="display: none">
                 <hr/>
 
                 <div class="form-group">
@@ -58,7 +58,7 @@
 
                 <div class="btn-toolbar text-right">
                     <span data-wait="show">
-                        <img src="/images/loading.gif"/> Загрузка...
+                        <img src="/images/loading.gif"/> Отправка...
                     </span>
                     <button type="submit" data-click="reply-send" class="btn btn-default" data-wait="disable">
                         Отправить ответ

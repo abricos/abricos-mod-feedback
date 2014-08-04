@@ -86,13 +86,38 @@ Component.entryPoint = function(NS){
                 case 'feedback-reply':
                     this.showFeedbackReply();
                     return true;
+                /*
+                 case 'reply-send':
+                 this.sendFeedbackReply();
+                 return true;
+                 /**/
+                case 'reply-cancel':
+                    this.hideFeedbackReply();
+                    return true;
             }
         },
         showFeedbackReply: function(){
-            new NS.FeedbackReplyWidget({
-                'boundingBox': this.template.gel('reply'),
-                'feedback': this.get('feedback')
-            });
+            var tp = this.template;
+            Y.one(tp.gel('reply')).show();
+            Y.one(tp.gel('bgroup')).hide();
+        },
+        hideFeedbackReply: function(){
+            var tp = this.template;
+            Y.one(tp.gel('reply')).hide();
+            Y.one(tp.gel('bgroup')).show();
+        },
+        onSubmitFormAction: function(){
+            this.set('waiting', true);
+
+            var model = this.get('model'),
+                feedbackId = this.get('feedbackId');
+
+            this.get('appInstance').replySend(feedbackId, model, function(err, result){
+                this.set('waiting', false);
+                if (!err){
+                    this.set('feedback', result.feedback);
+                }
+            }, this);
         }
     }, {
         ATTRS: {
