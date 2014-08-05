@@ -86,6 +86,10 @@ class FeedbackManager {
             "text" => $messageeml
         ));
 
+        if (count($arr) === 0 || (count($arr) === 1) && empty($arr[0])) {
+            array_push($arr, Brick::$builder->phrase->Get('sys', 'admin_mail'));
+        }
+
         foreach ($arr as $email) {
             $email = trim($email);
             if (empty($email)) {

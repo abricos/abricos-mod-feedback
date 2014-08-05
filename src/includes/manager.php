@@ -83,15 +83,15 @@ class FeedbackModuleManager extends Ab_ModuleManager {
             return null;
         }
         $lng = $this->module->lang;
-        return [
-            [
+        return array(
+            array(
                 "name" => "feedback",
                 "title" => $lng['bosmenu']['feedback'],
                 "icon" => "/modules/feedback/images/icon.gif",
                 "url" => "feedback/wspace/ws",
                 "parent" => "controlPanel"
-            ]
-        ];
+            )
+        );
     }
 }
 
