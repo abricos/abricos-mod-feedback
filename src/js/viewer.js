@@ -81,7 +81,6 @@ Component.entryPoint = function(NS){
                 lst += tp.replace('reply', reply.toJSON());
             });
 
-
             Y.one(tp.gel('replylist')).setHTML(lst);
 
             var model = new NS.Reply({

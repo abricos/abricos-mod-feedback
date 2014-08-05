@@ -16,6 +16,8 @@ Component.entryPoint = function(NS){
 
         COMPONENT = this,
 
+        BOUNDING_BOX = 'boundingBox',
+
         SYS = Brick.mod.sys;
 
     NS.FeedbackWidget = Y.Base.create('feedbackWidget', NS.AppWidget, [
@@ -36,9 +38,14 @@ Component.entryPoint = function(NS){
             this.get('appInstance').feedbackSend(model, function(err, result){
                 instance.set('waiting', false);
                 if (!err){
+                    instance.onSubmitCompleteFormAction(result);
                     instance.fire('feedbackSended');
                 }
             });
+        },
+        onSubmitCompleteFormAction: function(){
+            var bbox = this.get(BOUNDING_BOX);
+            bbox.replaceClass('feedback-status-input', 'feedback-status-complete');
         },
         _defFeedbackSended: function(){
         }
