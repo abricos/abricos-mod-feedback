@@ -6,6 +6,7 @@
 
 var Component = new Brick.Component();
 Component.requires = {
+    yui: ['aui-form-validator'],
     mod: [
         {name: '{C#MODNAME}', files: ['lib.js']}
     ]
@@ -21,6 +22,7 @@ Component.entryPoint = function(NS){
         SYS = Brick.mod.sys;
 
     NS.FeedbackWidget = Y.Base.create('feedbackWidget', NS.AppWidget, [
+        Y.FormValidator,
         SYS.Form,
         SYS.FormAction
     ], {
@@ -30,6 +32,15 @@ Component.entryPoint = function(NS){
             });
         },
         onSubmitFormAction: function(){
+            if (this.hasErrors()){
+                var errorText = this.get('errorText');
+                if (!errorText || errorText.length === 0){
+                    errorText = this.language.get('form.error.all');
+                }
+                Brick.mod.widget.notice.show(errorText);
+                return;
+            }
+
             this.set('waiting', true);
 
             var model = this.get('model'),
@@ -51,6 +62,15 @@ Component.entryPoint = function(NS){
         }
     }, {
         ATTRS: {
+            errorText: {
+                value: ''
+            },
+            validateOnInput: {
+                value: false
+            },
+            showMessages: {
+                value: false
+            },
             component: {
                 value: COMPONENT
             },
