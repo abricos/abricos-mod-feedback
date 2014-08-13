@@ -24,7 +24,7 @@ class FeedbackModule extends Ab_Module {
 	 * Конструктор 
 	 */
 	public function FeedbackModule(){
-		$this->version = "0.2.5";
+		$this->version = "0.2.5.1";
 		$this->name = "feedback";
 		$this->takelink = "feedback";
 		

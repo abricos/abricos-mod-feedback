@@ -53,6 +53,8 @@ class FeedbackManager {
             return 403;
         }
 
+        $utmf = Abricos::TextParser(true);
+
         $utm = Abricos::TextParser();
         $utm->jevix->cfgSetAutoBrMode(true);
 
@@ -64,13 +66,35 @@ class FeedbackManager {
             return 1;
         }
 
+        $overFields = "";
+        $overFieldsArray = array();
+        foreach ($data as $key => $value) {
+            if ($key === "fio" || $key === "phone"
+                || $key === "email" || $key === "message" || $key === "overfields"
+            ) {
+                continue;
+            }
+            if (strlen($value) > 1000 || count($overFieldsArray) > 50) {
+                continue;
+            }
+            $newval = $utmf->Parser($value);
+            if (empty($newval)) {
+                continue;
+            }
+            $overFieldsArray[$key] = $newval;
+        }
+
+        if (count($overFieldsArray) > 0) {
+            $overFields = json_encode($overFieldsArray);
+        }
+
         $userid = $this->userid;
 
         if ($userid == 0 && empty($data->email)) {
             // return 0;
         }
 
-        $globalid = md5(TIMENOW);
+        $globalid = md5(TIMENOW + rand(0, 1000));
 
         $emails = Brick::$builder->phrase->Get('feedback', 'adm_emails');
         $arr = explode(',', $emails);
@@ -99,7 +123,7 @@ class FeedbackManager {
             Abricos::Notify()->SendMail($email, $subject, $body);
         }
 
-        $messageId = FeedbackQuery::MessageAppend(Brick::$db, $globalid, $userid, $data->fio, $data->phone, $data->email, $message, $data->owner, $data->ownerparam);
+        $messageId = FeedbackQuery::MessageAppend(Brick::$db, $globalid, $userid, $data->fio, $data->phone, $data->email, $message, $overFields);
 
         $ret = new stdClass();
         $ret->messageid = $messageId;

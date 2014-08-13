@@ -26,10 +26,12 @@
                         </button>
 
                         <span id="{i#fbdelete}" class="btn-group" style="display: none">
-                            <button type="button" class="btn btn-danger btn-xs" data-click="feedback-delete" data-wait="disable">
+                            <button type="button" class="btn btn-danger btn-xs" data-click="feedback-delete"
+                                    data-wait="disable">
                                 Удалить?
                             </button>
-                            <button type="button" class="btn btn-default btn-xs" data-click="feedback-delete-cancel" data-wait="disable">
+                            <button type="button" class="btn btn-default btn-xs" data-click="feedback-delete-cancel"
+                                    data-wait="disable">
                                 Отмена
                             </button>
                         </span>
@@ -49,6 +51,8 @@
                     <dd id="{i#fldemail}"></dd>
                     <dt>Сообщение</dt>
                     <dd id="{i#fldmessage}"></dd>
+                </dl>
+                <dl id="{i#overs}" class="dl-horizontal">
                 </dl>
             </div>
 
@@ -85,6 +89,11 @@
         </div>
     </div>
 </form>
+
+<!--{overfield}-->
+<dt>{v#key}</dt>
+<dd>{v#value}</dd>
+
 
 <!--{reply}-->
 <div class="reply-view">

@@ -5,6 +5,7 @@
 
 var Component = new Brick.Component();
 Component.requires = {
+    yui: ['json-parse'],
     mod: [
         {name: '{C#MODNAME}', files: ['lib.js']}
     ]
@@ -73,6 +74,13 @@ Component.entryPoint = function(NS){
                 if (node){
                     node.setHTML(attrs[n]);
                 }
+            }
+
+            var overFieldsJSON = feedback.get('overfields'),
+                overFields = {};
+            try {
+                overFields = Y.JSON.parse(overFieldsJSON);
+            } catch (e) {
             }
 
             var isReply = false, lst = "";
@@ -165,7 +173,7 @@ Component.entryPoint = function(NS){
                 value: COMPONENT
             },
             templateBlockName: {
-                value: 'widget,reply'
+                value: 'widget,reply,overfield'
             }
         }
     });

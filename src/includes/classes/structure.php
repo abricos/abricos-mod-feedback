@@ -6,6 +6,7 @@ class Feedback extends AbricosItem {
     public $phone;
     public $email;
     public $message;
+    public $overFields;
     public $dateline;
 
     /**
@@ -20,6 +21,7 @@ class Feedback extends AbricosItem {
         $this->phone = strval($d['phone']);
         $this->email = strval($d['email']);
         $this->message = strval($d['message']);
+        $this->overFields = strval($d['overfields']);
         $this->dateline = intval($d['dateline']);
     }
 
@@ -29,6 +31,7 @@ class Feedback extends AbricosItem {
         $ret->phone = $this->phone;
         $ret->email = $this->email;
         $ret->message = $this->message;
+        $ret->overfields = $this->overFields;
         $ret->dateline = $this->dateline;
 
         if (!empty($this->replyList)){

@@ -58,7 +58,8 @@ class FeedbackQuery {
 				email,
 				message,
 				dateline,
-				status
+				status,
+				overfields
 			FROM ".$db->prefix."fb_message
 			ORDER BY dateline DESC
 		";
@@ -75,7 +76,8 @@ class FeedbackQuery {
 				email,
 				message,
 				dateline,
-				status
+				status,
+				overfields
 			FROM ".$db->prefix."fb_message
 			WHERE messageid=".bkint($feedbackId)."
 			LIMIT 1
@@ -105,10 +107,10 @@ class FeedbackQuery {
 		$db->query_write($sql);
 	}
 	
-	public static function MessageAppend(Ab_Database $db, $globalid, $userid, $fio, $phone, $email, $message, $owner, $ownerparam){
+	public static function MessageAppend(Ab_Database $db, $globalid, $userid, $fio, $phone, $email, $message, $overFields){
 		$sql = "
 			INSERT INTO ".$db->prefix."fb_message
-			(globalmessageid, userid, fio, phone, email, message, owner, ownerparam, dateline) VALUES
+			(globalmessageid, userid, fio, phone, email, message, overfields, dateline) VALUES
 			(
 				'".bkstr($globalid)."',
 				".bkint($userid).",
@@ -116,8 +118,7 @@ class FeedbackQuery {
 				'".bkstr($phone)."',
 				'".bkstr($email)."',
 				'".bkstr($message)."',
-				'".bkstr($owner)."',
-				'".bkstr($ownerparam)."',
+				'".bkstr($overFields)."',
 				".TIMENOW."
 			)
 		";

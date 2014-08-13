@@ -28,6 +28,9 @@ Component.entryPoint = function(NS){
             },
             message: {
                 value: ''
+            },
+            overfields: {
+                value: ''
             }
         }
     });
