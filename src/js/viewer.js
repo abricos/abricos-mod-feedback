@@ -76,11 +76,27 @@ Component.entryPoint = function(NS){
                 }
             }
 
+            if (!(Y.Lang.isString(attrs.email) && attrs.length > 0)){
+                Y.one(tp.gel('replywrap')).hide();
+            }
+
             var overFieldsJSON = feedback.get('overfields'),
-                overFields = {};
+                overFields = {}, lstOverFields = "";
             try {
                 overFields = Y.JSON.parse(overFieldsJSON);
             } catch (e) {
+            }
+
+            for (var n in overFields){
+                lstOverFields += tp.replace('overfield', {
+                    key: n,
+                    value: overFields[n]
+                });
+            }
+            if (lstOverFields !== ""){
+                Y.one(tp.gel('overs')).setHTML(tp.replace('overfields', {
+                    rows: lstOverFields
+                }));
             }
 
             var isReply = false, lst = "";
@@ -173,7 +189,7 @@ Component.entryPoint = function(NS){
                 value: COMPONENT
             },
             templateBlockName: {
-                value: 'widget,reply,overfield'
+                value: 'widget,reply,overfields,overfield'
             }
         }
     });

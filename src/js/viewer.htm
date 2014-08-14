@@ -52,43 +52,48 @@
                     <dt>Сообщение</dt>
                     <dd id="{i#fldmessage}"></dd>
                 </dl>
-                <dl id="{i#overs}" class="dl-horizontal">
-                </dl>
+                <div id="{i#overs}"></div>
             </div>
 
             <div id="{i#replylist}"></div>
 
-            <div id="{i#reply}" style="display: none">
-                <hr/>
+            <div id="{i#replywrap}">
+                <div id="{i#reply}" style="display: none">
+                    <hr/>
 
-                <div class="form-group">
-                    <dl class="dl-horizontal">
-                        <dt>
-                            <label for="{i#message}">Ответ</label>
-                        </dt>
-                        <dd>
-                            <textarea id="{i#message}" name="message" class="form-control" rows="4"
-                                      data-wait="disable"></textarea>
-                        </dd>
-                    </dl>
-                </div>
+                    <div class="form-group">
+                        <dl class="dl-horizontal">
+                            <dt>
+                                <label for="{i#message}">Ответ</label>
+                            </dt>
+                            <dd>
+                                <textarea id="{i#message}" name="message" class="form-control" rows="4"
+                                          data-wait="disable"></textarea>
+                            </dd>
+                        </dl>
+                    </div>
 
-                <div class="btn-toolbar text-right">
+                    <div class="btn-toolbar text-right">
                     <span data-wait="show">
                         <img src="/images/loading.gif"/> Отправка...
                     </span>
-                    <button type="submit" data-click="reply-send" class="btn btn-default" data-wait="disable">
-                        Отправить ответ
-                    </button>
-                    <button type="button" data-click="reply-cancel" class="btn btn-default" data-wait="disable">
-                        Отмена
-                    </button>
+                        <button type="submit" data-click="reply-send" class="btn btn-default" data-wait="disable">
+                            Отправить ответ
+                        </button>
+                        <button type="button" data-click="reply-cancel" class="btn btn-default" data-wait="disable">
+                            Отмена
+                        </button>
+                    </div>
                 </div>
             </div>
-
         </div>
     </div>
 </form>
+
+<!--{overfields}-->
+<dl class="dl-horizontal">
+    {v#rows}
+</dl>
 
 <!--{overfield}-->
 <dt>{v#key}</dt>
