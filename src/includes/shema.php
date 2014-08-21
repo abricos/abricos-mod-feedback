@@ -28,8 +28,8 @@ if ($updateManager->isInstall()){
 		  `phone` varchar(250) NOT NULL default '' COMMENT 'Телефон',
 		  `email` varchar(250) NOT NULL default '' COMMENT 'E-mail',
 		  `message` TEXT NOT NULL COMMENT 'Сообщение',
-		  `overfields` TEXT NOT NULL COMMENT 'Over Fields in JSON'
-		  `status` int(1) unsigned NOT NULL default '0' COMMENT 'Статус: 0-поступившее, 1-был дан ответ',
+		  `overfields` TEXT NOT NULL COMMENT 'Over Fields in JSON',
+		  `status` int(1) unsigned NOT NULL default 0 COMMENT 'Статус: 0-поступившее, 1-был дан ответ',
 		  `dateline` int(10) unsigned NOT NULL default '0',
 		  `deldate` int(10) unsigned NOT NULL default '0',
 		  PRIMARY KEY  (`messageid`)
