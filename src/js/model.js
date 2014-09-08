@@ -58,4 +58,13 @@ Component.entryPoint = function(NS){
         model: NS.Reply
     });
 
+    NS.Config = Y.Base.create('config', Y.Model, [ ], {}, {
+        ATTRS: {
+            adm_emails: {
+                value: ''
+            }
+        }
+    });
+
+
 };

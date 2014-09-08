@@ -55,7 +55,8 @@ Component.entryPoint = function(NS){
         },
         buildTData: function(pgInfo){
             return {
-                'urlmanager': NS.URL.manager.view()
+                'urlmanager': NS.URL.manager.view(),
+                'urlconfig': NS.URL.config.view()
             };
         },
         onLoad: function(pgInfo){

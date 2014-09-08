@@ -30,6 +30,11 @@ Component.entryPoint = function(NS){
                 return NS.URL.ws + 'manager/ManagerWidget/'
             }
         },
+        config: {
+            view: function(){
+                return NS.URL.ws + 'config/ConfigWidget/'
+            }
+        },
         feedback: {
             view: function(feedbackId){
                 return NS.URL.ws + 'viewer/FeedbackViewWidget/' + feedbackId + '/';
@@ -129,6 +134,10 @@ Component.entryPoint = function(NS){
             data = data || {};
             var ret = {};
 
+            if (data.config){
+                ret.config = new NS.Config(data.config);
+            }
+
             if (data.feedbacks){
                 var feedbackListClass = this.get('feedbackListClass');
                 ret.feedbackList = new feedbackListClass({
@@ -212,6 +221,11 @@ Component.entryPoint = function(NS){
                 'feedbackid': feedbackId,
                 'savedata': reply.toJSON()
             }, this._defaultAJAXCallback, {
+                arguments: {callback: callback, context: context}
+            });
+        },
+        configLoad: function(callback, context){
+            this.ajax({'do': 'config'}, this._defaultAJAXCallback, {
                 arguments: {callback: callback, context: context}
             });
         }

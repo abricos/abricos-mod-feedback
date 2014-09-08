@@ -27,6 +27,8 @@ class FeedbackManager {
                 return $this->FeedbackToAJAX($d->feedbackid);
             case "replysend":
                 return $this->ReplySendToAJAX($d->feedbackid, $d->savedata);
+            case "config":
+                return $this->ConfigToAJAX();
         }
         return null;
     }
@@ -233,6 +235,34 @@ class FeedbackManager {
             return null;
         }
         FeedbackQuery::MessageRemove(Brick::$db, $messageid);
+    }
+
+
+    public function ConfigToAJAX($overResult = null) {
+        $ret = !empty($overResult) ? $overResult : (new stdClass());
+        $ret->err = 0;
+
+        $result = $this->Config();
+        if (is_integer($result)) {
+            $ret->err = $result;
+        } else {
+            $ret->config = $result->ToAJAX();
+        }
+
+        return $ret;
+    }
+
+    public function Config() {
+        if (!$this->manager->IsAdminRole()) {
+            return 403;
+        }
+
+        Brick::$builder->phrase->PreloadByModule("feedback");
+        $rows = Brick::$builder->phrase->GetArray("feedback");
+
+        $config = new FeedbackConfig([]);
+
+        return $config;
     }
 
 }
