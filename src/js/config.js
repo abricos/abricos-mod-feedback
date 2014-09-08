@@ -12,13 +12,15 @@ Component.requires = {
 Component.entryPoint = function(NS){
 
     var Y = Brick.YUI,
-        COMPONENT = this;
+        COMPONENT = this,
+        SYS = Brick.mod.sys;
 
     NS.ConfigWidget = Y.Base.create('configWidget', NS.AppWidget, [
+        SYS.Form,
+        SYS.FormAction
     ], {
         onInitAppWidget: function(err, appInstance, options){
             this.reloadConfig();
-
         },
         reloadConfig: function(){
             this.set('waiting', true);
@@ -33,38 +35,21 @@ Component.entryPoint = function(NS){
         },
         renderConfig: function(){
             var config = this.get('config');
-            console.log(config);
-            if (!feedbackList){
-                return;
-            }
-            /*
-            var tp = this.template, lst = "";
-
-            feedbackList.each(function(feedback){
-                var attrs = feedback.toJSON();
-                lst += tp.replace('row', [
-                    attrs
-                ]);
-            });
-            tp.gel('list').innerHTML = tp.replace('list', {
-                'rows': lst
-            });
-            /**/
+            this.set('model', config);
         },
-        onClick: function(e){
-            /*
-            var feedbackId = e.target.getData('id') | 0;
-            if (feedbackId === 0){
-                return;
-            }
+        onSubmitFormAction: function(){
+            this.set('waiting', true);
 
-            switch (e.dataClick) {
-                case 'feedback-open':
-                    this.showFeedback(feedbackId);
-                    return true;
-            }
-            /**/
-        }
+            var model = this.get('model'),
+                instance = this;
+
+            this.get('appInstance').configSave(model, function(err, result){
+                instance.set('waiting', false);
+                if (!err){
+                    // instance.fire('editorSaved');
+                }
+            });
+        },
     }, {
         ATTRS: {
             component: {

@@ -228,6 +228,14 @@ Component.entryPoint = function(NS){
             this.ajax({'do': 'config'}, this._defaultAJAXCallback, {
                 arguments: {callback: callback, context: context}
             });
+        },
+        configSave: function(config, callback, context){
+            this.ajax({
+                'do': 'configsave',
+                'savedata': config.toJSON()
+            }, this._defaultAJAXCallback, {
+                arguments: {callback: callback, context: context}
+            });
         }
     };
     NS.AppBase = AppBase;

@@ -1,5 +1,5 @@
 <!--{widget}-->
-<div id="{i#id}" class="config">
+<form id="{i#id}" class="config">
     <div class="panel panel-default">
         <div class="panel-heading">
 
@@ -19,7 +19,21 @@
 
         </div>
         <div class="panel-body">
-            В разработке...
+            <div class="form-group">
+                <label for="{i#adm_emails}">Адрес уведомления о новом сообщении</label>
+                <input id="{i#adm_emails}" name="adm_emails" type="text" class="form-control" data-wait="disable">
+                <p class="help-block">Если адресов несколько, необходимо разделить их запятой</p>
+            </div>
+
+            <div class="btn-toolbar text-right">
+                <span data-wait="show">
+                    <img src="/images/loading.gif"/> Загрузка...
+                </span>
+                <button type="submit" class="btn btn-default edit-isedit" data-wait="disable">
+                    Сохранить
+                </button>
+            </div>
+
         </div>
     </div>
-</div>
+</form>

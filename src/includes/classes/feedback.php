@@ -29,6 +29,8 @@ class FeedbackManager {
                 return $this->ReplySendToAJAX($d->feedbackid, $d->savedata);
             case "config":
                 return $this->ConfigToAJAX();
+            case "configsave":
+                return $this->ConfigSaveToAJAX($d->savedata);
         }
         return null;
     }
@@ -260,11 +262,33 @@ class FeedbackManager {
         Brick::$builder->phrase->PreloadByModule("feedback");
         $rows = Brick::$builder->phrase->GetArray("feedback");
 
-        $config = new FeedbackConfig([]);
+        $d = [];
+        foreach ($rows as $row) {
+            $d[$row['nm']] = $row['ph'];
+        }
+
+        $config = new FeedbackConfig($d);
 
         return $config;
     }
 
+    public function ConfigSaveToAJAX($sd) {
+        $this->ConfigSave($sd);
+        return $this->ConfigToAJAX();
+    }
+
+    public function ConfigSave($sd) {
+        if (!$this->manager->IsAdminRole()) {
+            return 403;
+        }
+
+        $utmf = Abricos::TextParser(true);
+
+        $ph = Brick::$builder->phrase;
+
+        $ph->Set("feedback", "adm_emails", $utmf->Parser($sd->adm_emails));
+        $ph->Save();
+    }
 }
 
 ?>
