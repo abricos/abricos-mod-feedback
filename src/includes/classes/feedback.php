@@ -262,7 +262,7 @@ class FeedbackManager {
         Brick::$builder->phrase->PreloadByModule("feedback");
         $rows = Brick::$builder->phrase->GetArray("feedback");
 
-        $d = [];
+        $d = array();
         foreach ($rows as $row) {
             $d[$row['nm']] = $row['ph'];
         }
