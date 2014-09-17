@@ -16,8 +16,7 @@ Component.entryPoint = function(NS){
         COMPONENT = this;
 
     var Dom = YAHOO.util.Dom,
-        L = YAHOO.lang,
-        R = NS.roles;
+        L = YAHOO.lang;
 
     var buildTemplate = this.buildTemplate;
 
@@ -68,23 +67,18 @@ Component.entryPoint = function(NS){
             // var elMenu = Dom.get(this.gel('menu'));
 
             var appMenu = new SYS.AppMenu({
-                language: COMPONENT,
+                component: COMPONENT,
                 nodes: [{
                     id: 'manager',
-                    title: 'Сообщения пользовтелей',
-                    label: 'Label: Сообщения пользовтелей',
                     children: [{
                         id: 'create',
                         title: 'Создать сообщение'
                     }]
                 }, {
-                    id: 'config',
-                    title: 'Настройки'
+                    id: 'config'
                 }]
 
             });
-
-            console.log(appMenu.children);
 
             /*
              appMenu.each(function(item){
