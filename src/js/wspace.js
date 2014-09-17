@@ -6,10 +6,14 @@
 var Component = new Brick.Component();
 Component.requires = {
     mod: [
+        {name: 'sys', files: ['appmenu.js']},
         {name: '{C#MODNAME}', files: ['lib.js']}
     ]
 };
 Component.entryPoint = function(NS){
+
+    var SYS = Brick.mod.sys,
+        COMPONENT = this;
 
     var Dom = YAHOO.util.Dom,
         L = YAHOO.lang,
@@ -60,6 +64,34 @@ Component.entryPoint = function(NS){
             };
         },
         onLoad: function(pgInfo){
+
+            // var elMenu = Dom.get(this.gel('menu'));
+
+            var appMenu = new SYS.AppMenu({
+                language: COMPONENT,
+                nodes: [{
+                    id: 'manager',
+                    title: 'Сообщения пользовтелей',
+                    label: 'Label: Сообщения пользовтелей',
+                    children: [{
+                        id: 'create',
+                        title: 'Создать сообщение'
+                    }]
+                }, {
+                    id: 'config',
+                    title: 'Настройки'
+                }]
+
+            });
+
+            console.log(appMenu.children);
+
+            /*
+             appMenu.each(function(item){
+             console.log(item.getAttrs());
+             });
+             /**/
+
             this.showPage(pgInfo);
         },
         showPage: function(p){
@@ -139,7 +171,8 @@ Component.entryPoint = function(NS){
                 }
             }
         }
-    });
+    })
+    ;
     NS.WSWidget = WSWidget;
 
 
@@ -179,4 +212,5 @@ Component.entryPoint = function(NS){
         return activeWSPanel;
     };
 
-};
+}
+;
