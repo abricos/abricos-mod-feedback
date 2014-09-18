@@ -63,24 +63,6 @@ Component.entryPoint = function(NS){
             };
         },
         onLoad: function(pgInfo){
-
-            var appMenu = new SYS.AppMenu({
-                component: COMPONENT,
-                nodes: [
-                    {
-                        id: 'manager',
-                        url: NS.URL.manager.view()
-                    }, {
-                        id: 'config',
-                        url: NS.URL.config.view()
-                    }
-                ]
-            });
-
-            var w = new SYS.AppMenuWidget({
-                boundingBox: this.gel('menu')
-            });
-
             this.showPage(pgInfo);
         },
         showPage: function(p){
