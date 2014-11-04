@@ -73,8 +73,7 @@ class FeedbackManager {
         $overFields = "";
         $overFieldsArray = array();
         foreach ($data as $key => $value) {
-            if ($key === "fio" || $key === "phone"
-                || $key === "email" || $key === "message" || $key === "overfields"
+            if ($key === "fio" || $key === "phone" || $key === "email" || $key === "message" || $key === "overfields"
             ) {
                 continue;
             }
@@ -100,7 +99,7 @@ class FeedbackManager {
 
         $globalid = md5(TIMENOW + rand(0, 1000));
 
-        $emails = Brick::$builder->phrase->Get('feedback', 'adm_emails');
+        $emails = FeedbackModule::$instance->GetPhrases()->Get('adm_emails');
         $arr = explode(',', $emails);
 
         $brick = Brick::$builder->LoadBrickS("feedback", "templates");
@@ -115,7 +114,7 @@ class FeedbackManager {
         ));
 
         if (count($arr) === 0 || (count($arr) === 1) && empty($arr[0])) {
-            array_push($arr, Brick::$builder->phrase->Get('sys', 'admin_mail'));
+            array_push($arr, SystemModule::$instance->GetPhrases()->Get('admin_mail'));
         }
 
         foreach ($arr as $email) {
@@ -216,10 +215,7 @@ class FeedbackManager {
 
         $body = nl2br($sd->message);
 
-        Abricos::Notify()->SendMail($feedback->email,
-            "Re: ".Brick::$builder->phrase->Get('sys', 'site_name'),
-            $body
-        );
+        Abricos::Notify()->SendMail($feedback->email, "Re: ".SystemModule::$instance->GetPhrases()->Get('site_name'), $body);
 
         FeedbackQuery::Reply($this->db, $feedbackId, Abricos::$user->id, $body);
 
@@ -259,12 +255,12 @@ class FeedbackManager {
             return 403;
         }
 
-        Brick::$builder->phrase->PreloadByModule("feedback");
-        $rows = Brick::$builder->phrase->GetArray("feedback");
+        $phrases = FeedbackModule::$instance->GetPhrases();
 
         $d = array();
-        foreach ($rows as $row) {
-            $d[$row['nm']] = $row['ph'];
+        for ($i = 0; $i < $phrases->Count(); $i++) {
+            $ph = $phrases->GetByIndex($i);
+            $d[$ph->id] = $ph->value;
         }
 
         $config = new FeedbackConfig($d);
@@ -282,12 +278,9 @@ class FeedbackManager {
             return 403;
         }
 
-        $utmf = Abricos::TextParser(true);
-
-        $ph = Brick::$builder->phrase;
-
-        $ph->Set("feedback", "adm_emails", $utmf->Parser($sd->adm_emails));
-        $ph->Save();
+        $phs = FeedbackModule::$instance->GetPhrases();
+        $phs->Set("adm_emails", $utmf->Parser($sd->adm_emails));
+        $phs->Save();
     }
 }
 
