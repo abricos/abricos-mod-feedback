@@ -1,5 +1,6 @@
 <?php
 return array(
+    "title" => "Обратная связь",
     "bosmenu" => array(
         "feedback" => "Обратная связь"
     ),
