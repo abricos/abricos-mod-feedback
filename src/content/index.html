@@ -31,8 +31,8 @@
 </form>
 
 <script language='JavaScript' type='text/javascript' charset='utf-8'>
-    Brick.f('feedback', 'feedback', function(){
-        new Brick.mod.feedback.FeedbackWidget({
+    Brick.use('feedback', 'feedback', function(err, NS){
+        new NS.FeedbackWidget({
             boundingBox: '#feedback_static_form'
         });
     });
