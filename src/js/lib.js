@@ -9,10 +9,16 @@ Component.requires = {
     mod: [
         {name: 'sys', files: ['application.js', 'widget.js', 'form.js']},
         {name: 'widget', files: ['notice.js']},
-        {name: '{C#MODNAME}', files: ['roles.js', 'model.js']}
+        {name: '{C#MODNAME}', files: ['model.js']}
     ]
 };
 Component.entryPoint = function(NS){
+
+    NS.roles = new Brick.AppRoles('{C#MODNAME}', {
+        isAdmin: 50,
+        isWrite: 30,
+        isView: 10
+    });
 
     var Y = Brick.YUI,
 
