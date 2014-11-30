@@ -34,7 +34,7 @@ class Feedback extends AbricosItem {
         $ret->overfields = $this->overFields;
         $ret->dateline = $this->dateline;
 
-        if (!empty($this->replyList)){
+        if (!empty($this->replyList)) {
             $ret->replies = $this->replyList->ToAJAX();
         }
 
@@ -74,8 +74,7 @@ class FeedbackConfig {
     public $admEmails;
 
     public function __construct($d) {
-
-        $this->admEmails = strval($d['adm_emails']);
+        $this->admEmails = isset($d['adm_emails']) ? strval($d['adm_emails']) : "";
     }
 
     public function ToAJAX() {
