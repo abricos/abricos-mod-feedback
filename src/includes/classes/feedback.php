@@ -277,10 +277,12 @@ class FeedbackManager {
         if (!$this->manager->IsAdminRole()) {
             return 403;
         }
+        $utmf = Abricos::TextParser(true);
 
         $phs = FeedbackModule::$instance->GetPhrases();
         $phs->Set("adm_emails", $utmf->Parser($sd->adm_emails));
-        $phs->Save();
+
+        Abricos::$phrases->Save();
     }
 }
 

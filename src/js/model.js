@@ -31,6 +31,9 @@ Component.entryPoint = function(NS){
             },
             overfields: {
                 value: ''
+            },
+            dateline: {
+                value: 0
             }
         }
     });

@@ -14,8 +14,7 @@ Component.entryPoint = function(NS){
     var Y = Brick.YUI,
         COMPONENT = this;
 
-    NS.ManagerWidget = Y.Base.create('managerWidget', NS.AppWidget, [
-    ], {
+    NS.ManagerWidget = Y.Base.create('managerWidget', NS.AppWidget, [], {
         onInitAppWidget: function(err, appInstance, options){
             this.reloadFeedbackList();
         },
@@ -41,7 +40,9 @@ Component.entryPoint = function(NS){
             feedbackList.each(function(feedback){
                 var attrs = feedback.toJSON();
                 lst += tp.replace('row', [
-                    attrs
+                    attrs, {
+                        date: Brick.dateExt.convert(attrs.dateline)
+                    }
                 ]);
             });
             tp.gel('list').innerHTML = tp.replace('list', {

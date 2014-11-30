@@ -25,7 +25,7 @@ Component.entryPoint = function(NS){
         reloadConfig: function(){
             this.set('waiting', true);
 
-            this.get('appInstance').configLoad(function(err, result){
+            this.get('appInstance').config(function(err, result){
                 this.set('waiting', false);
                 if (!err){
                     this.set('config', result.config);

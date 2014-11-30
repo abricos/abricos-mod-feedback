@@ -69,18 +69,17 @@ class FeedbackReply extends AbricosItem {
 class FeedbackReplyList extends AbricosList {
 }
 
-class FeedbackConfig extends AbricosItem {
+class FeedbackConfig {
 
     public $admEmails;
 
     public function __construct($d) {
-        parent::__construct($d);
 
         $this->admEmails = strval($d['adm_emails']);
     }
 
     public function ToAJAX() {
-        $ret = parent::ToAJAX();
+        $ret = new stdClass();
         $ret->adm_emails = $this->admEmails;
         return $ret;
     }
