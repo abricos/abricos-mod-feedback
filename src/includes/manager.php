@@ -62,7 +62,9 @@ class FeedbackModuleManager extends Ab_ModuleManager {
         } else if (is_object($res)) {
             $ret = $res;
         }
-        $ret->err = intval($ret->err);
+        if (isset($ret->err)){
+            $ret->err = intval($ret->err);
+        }
 
         return $ret;
     }

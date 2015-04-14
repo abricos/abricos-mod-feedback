@@ -91,7 +91,7 @@ class FeedbackManager {
             $overFields = json_encode($overFieldsArray);
         }
 
-        $userid = $this->userid;
+        $userid = Abricos::$user->id;
 
         if ($userid == 0 && empty($data->email)) {
             // return 0;
