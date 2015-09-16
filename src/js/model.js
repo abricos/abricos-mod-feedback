@@ -1,8 +1,3 @@
-/*!
- * Copyright 2014 Alexander Kuzmin <roosit@abricos.org>
- * Licensed under the MIT license
- */
-
 var Component = new Brick.Component();
 Component.requires = {
     yui: ['model', 'model-list']
@@ -11,7 +6,7 @@ Component.entryPoint = function(NS){
 
     var Y = Brick.YUI;
 
-    NS.Feedback = Y.Base.create('feedback', Y.Model, [ ], {
+    NS.Feedback = Y.Base.create('feedback', Y.Model, [], {
         initializer: function(){
             this.replyList = null;
         }
@@ -42,8 +37,7 @@ Component.entryPoint = function(NS){
         model: NS.Feedback
     });
 
-    NS.Reply = Y.Base.create('reply', Y.Model, [ ], {
-    }, {
+    NS.Reply = Y.Base.create('reply', Y.Model, [], {}, {
         ATTRS: {
             userid: {
                 value: 0
@@ -61,7 +55,7 @@ Component.entryPoint = function(NS){
         model: NS.Reply
     });
 
-    NS.Config = Y.Base.create('config', Y.Model, [ ], {}, {
+    NS.Config = Y.Base.create('config', Y.Model, [], {}, {
         ATTRS: {
             adm_emails: {
                 value: ''
