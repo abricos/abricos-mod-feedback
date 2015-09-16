@@ -7,9 +7,10 @@ Component.requires = {
 Component.entryPoint = function(NS){
 
     var Y = Brick.YUI,
-        COMPONENT = this;
+        COMPONENT = this,
+        SYS = Brick.mod.sys;
 
-    NS.ManagerWidget = Y.Base.create('managerWidget', NS.AppWidget, [], {
+    NS.ManagerWidget = Y.Base.create('managerWidget', SYS.AppWidget, [], {
         onInitAppWidget: function(err, appInstance, options){
             this.reloadFeedbackList();
         },

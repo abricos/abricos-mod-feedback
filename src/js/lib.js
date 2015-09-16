@@ -21,30 +21,6 @@ Component.entryPoint = function(NS){
 
         SYS = Brick.mod.sys;
 
-    /**
-     * @deprecated
-     */
-    NS.AppWidget = SYS.AppWidget;
-
-    NS.URL = {
-        ws: "#app={C#MODNAMEURI}/wspace/ws/",
-        manager: {
-            view: function(){
-                return NS.URL.ws + 'manager/ManagerWidget/'
-            }
-        },
-        config: {
-            view: function(){
-                return NS.URL.ws + 'config/ConfigWidget/'
-            }
-        },
-        feedback: {
-            view: function(feedbackId){
-                return NS.URL.ws + 'viewer/FeedbackViewWidget/' + feedbackId + '/';
-            }
-        }
-    };
-
     SYS.Application.build(COMPONENT, {
         config: {
             response: function(d){
@@ -160,6 +136,24 @@ Component.entryPoint = function(NS){
             },
             replyListClass: {
                 value: NS.ReplyList
+            }
+        },
+        URLS: {
+            ws: "#app={C#MODNAMEURI}/wspace/ws/",
+            manager: {
+                view: function(){
+                    return this.getURL('ws') + 'manager/ManagerWidget/'
+                }
+            },
+            config: {
+                view: function(){
+                    return this.getURL('ws') + 'config/ConfigWidget/'
+                }
+            },
+            feedback: {
+                view: function(feedbackId){
+                    return this.getURL('ws') + 'viewer/FeedbackViewWidget/' + feedbackId + '/';
+                }
             }
         }
     });
