@@ -15,12 +15,12 @@ Component.entryPoint = function(NS){
 
         SYS = Brick.mod.sys;
 
-    NS.FeedbackWidget = Y.Base.create('feedbackWidget', NS.AppWidget, [
+    NS.FeedbackWidget = Y.Base.create('feedbackWidget', SYS.AppWidget, [
         Y.FormValidator,
         SYS.Form,
         SYS.FormAction
     ], {
-        initializer: function(){
+        onInitAppWidget: function(){
             this.publish('feedbackSended', {
                 defaultFn: this._defFeedbackSended
             });

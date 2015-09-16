@@ -9,61 +9,59 @@
 
 /**
  * Class FeedbackManager
+ *
+ * @property FeedbackModuleManager $manager
  */
-class FeedbackManager {
+class Feedback extends AbricosApplication {
 
-    /**
-     * @var FeedbackModuleManager
-     */
-    public $manager;
-
-    /**
-     * @var Ab_Database
-     */
-    public $db;
-
-    public function __construct(FeedbackModuleManager $manager) {
-        $this->manager = $manager;
-        $this->db = $manager->db;
+    protected function GetClasses(){
+        return array(
+            'Config' => 'FeedbackConfig',
+            'Message' => 'FeedbackMessage',
+            'MessageList' => 'FeedbackMessageList',
+            'Reply' => 'FeedbackReply',
+            'ReplyList' => 'FeedbackReplyList'
+        );
     }
 
-    public function AJAX($d) {
-        switch ($d->do) {
-            case "feedbacksend":
-                return $this->FeedbackSendToAJAX($d->savedata);
-            case "feedbacklist":
-                return $this->FeedbackListToAJAX();
-            case "feedback":
-                return $this->FeedbackToAJAX($d->feedbackid);
-            case "replysend":
-                return $this->ReplySendToAJAX($d->feedbackid, $d->savedata);
+    protected function GetStructures(){
+        return 'Message,Reply,ReplyList,Config';
+    }
+
+    public function ResponseToJSON($d){
+        switch ($d->do){
+            case "feedbackSend":
+                return $this->FeedbackSendToJSON($d->feedback);
+            case "messageList":
+                return $this->MessageListToJSON();
+            case "message":
+                return $this->MessageToJSON($d->messageid);
+            case "messageRemove":
+                return $this->MessageRemoveToJSON($d->messageid);
+            case "replySend":
+                return $this->ReplySendToJSON($d->messageid, $d->reply);
             case "config":
-                return $this->ConfigToAJAX();
-            case "configsave":
-                return $this->ConfigSaveToAJAX($d->savedata);
+                return $this->ConfigToJSON();
+            case "configSave":
+                return $this->ConfigSaveToJSON($d->config);
+
         }
         return null;
     }
 
-    public function FeedbackSendToAJAX($sd) {
+    public function FeedbackSendToJSON($sd){
         $res = $this->FeedbackSend($sd);
-        $ret = $this->manager->TreatResult($res);
-        return $ret;
+        return $this->ResultToJSON('feedbackSend', $res);
     }
-
 
     /**
      * Добавить сообщение от пользователя и отправить уведомление администратору сайта
      *
-     * Код ошибки:
-     *  1 - сообщение не должно быть пустым
-     *
-     * @static
      * @param object $data данные сообщения
      * @return integer код ошибки
      */
-    public function FeedbackSend($data) {
-        if (!$this->manager->IsWriteRole()) {
+    public function FeedbackSend($data){
+        if (!$this->manager->IsWriteRole()){
             return 403;
         }
 
@@ -76,34 +74,32 @@ class FeedbackManager {
         $message = $utm->JevixParser($data->message);
         $message = str_replace("<br/>", "", $message);
 
-        if (empty($message)) {
-            return 1;
-        }
-
         $overFields = "";
         $overFieldsArray = array();
-        foreach ($data as $key => $value) {
-            if ($key === "fio" || $key === "phone" || $key === "email" || $key === "message" || $key === "overfields"
-            ) {
+        foreach ($data as $key => $value){
+            if ($key === "fio" || $key === "phone" ||
+                $key === "email" || $key === "message" ||
+                $key === "overfields"
+            ){
                 continue;
             }
-            if (strlen($value) > 1000 || count($overFieldsArray) > 50) {
+            if (strlen($value) > 1000 || count($overFieldsArray) > 50){
                 continue;
             }
             $newval = $utmf->Parser($value);
-            if (empty($newval)) {
+            if (empty($newval)){
                 continue;
             }
             $overFieldsArray[$key] = $newval;
         }
 
-        if (count($overFieldsArray) > 0) {
+        if (count($overFieldsArray) > 0){
             $overFields = json_encode($overFieldsArray);
         }
 
         $userid = Abricos::$user->id;
 
-        if ($userid == 0 && empty($data->email)) {
+        if ($userid === 0 && empty($data->email)){
             // return 0;
         }
 
@@ -123,13 +119,13 @@ class FeedbackManager {
             "text" => $messageeml
         ));
 
-        if (count($arr) === 0 || (count($arr) === 1) && empty($arr[0])) {
+        if (count($arr) === 0 || (count($arr) === 1) && empty($arr[0])){
             array_push($arr, SystemModule::$instance->GetPhrases()->Get('admin_mail'));
         }
 
-        foreach ($arr as $email) {
+        foreach ($arr as $email){
             $email = trim($email);
-            if (empty($email)) {
+            if (empty($email)){
                 continue;
             }
 
@@ -144,147 +140,135 @@ class FeedbackManager {
         return $ret;
     }
 
-    public function FeedbackListToAJAX($overResult = null) {
-        $ret = !empty($overResult) ? $overResult : (new stdClass());
-        $ret->err = 0;
-
-        $result = $this->FeedbackList();
-        if (is_integer($result)) {
-            $ret->err = $result;
-        } else {
-            $ret->feedbacks = $result->ToAJAX();
-        }
-
-        return $ret;
+    public function MessageListToJSON(){
+        $res = $this->MessageList();
+        return $this->ResultToJSON('messageList', $res);
     }
 
     /**
-     * Получить список сообщений
+     * @return FeedbackMessageList
      */
-    public function FeedbackList() {
-        if (!$this->manager->IsAdminRole()) {
+    public function MessageList(){
+        if (!$this->manager->IsAdminRole()){
             return 403;
         }
 
-        $list = new FeedbackList();
-        $rows = FeedbackQuery::FeedbackList($this->db);
-        while (($d = $this->db->fetch_array($rows))) {
-            $list->Add(new Feedback($d));
+        $list = $this->models->InstanceClass('MessageList');
+        $rows = FeedbackQuery::MessageList($this->db);
+        while (($d = $this->db->fetch_array($rows))){
+            $list->Add($this->models->InstanceClass('Message', $d));
         }
         return $list;
     }
 
-    public function FeedbackToAJAX($feedbackId, $overResult = null) {
-        $ret = !empty($overResult) ? $overResult : (new stdClass());
-        $ret->err = 0;
-
-        $result = $this->Feedback($feedbackId);
-        if (is_integer($result)) {
-            $ret->err = $result;
-        } else {
-            $ret->feedback = $result->ToAJAX();
-        }
-
-        return $ret;
+    public function MessageToJSON($messageid){
+        $res = $this->Message($messageid);
+        return $this->ResultToJSON('message', $res);
     }
 
-    public function Feedback($feedbackId) {
-        if (!$this->manager->IsAdminRole()) {
+    /**
+     * @param $messageid
+     * @return FeedbackMessage
+     */
+    public function Message($messageid){
+        if (!$this->manager->IsAdminRole()){
             return 403;
         }
-        $row = FeedbackQuery::Feedback($this->db, $feedbackId);
-        if (empty($row)) {
+        $d = FeedbackQuery::Feedback($this->db, $messageid);
+        if (empty($d)){
             return 404;
         }
 
-        $feedback = new Feedback($row);
+        /** @var FeedbackMessage $message */
+        $message = $this->models->InstanceClass('Message', $d);
 
-        $list = new FeedbackReplyList();
-        $rows = FeedbackQuery::ReplyList($this->db, $feedbackId);
-        while (($d = $this->db->fetch_array($rows))) {
-            $list->Add(new FeedbackReply($d));
+        $rows = FeedbackQuery::ReplyList($this->db, $messageid);
+        while (($d = $this->db->fetch_array($rows))){
+            $message->replyList->Add($this->models->InstanceClass('Reply', $d));
         }
-        $feedback->replyList = $list;
 
-        return $feedback;
+        return $message;
     }
 
-    public function ReplySendToAJAX($feedbackId, $sd) {
-        $res = $this->ReplySend($feedbackId, $sd);
-        $ret = $this->manager->TreatResult($res);
-        return $ret;
+    public function ReplySendToJSON($messageid, $d){
+        $res = $this->ReplySend($messageid, $d);
+        return $this->ImplodeJSON(array(
+            $this->MessageToJSON($messageid),
+            $this->ResultToJSON('replySend', $res)
+        ));
     }
 
-    public function ReplySend($feedbackId, $sd) {
+    public function ReplySend($messageid, $sd){
+        if (!$this->manager->IsAdminRole()){
+            return 403;
+        }
 
-        $feedback = $this->Feedback($feedbackId);
+        $message = $this->Message($messageid);
 
-        if (is_integer($feedback)) {
-            return $feedback;
+        if (is_integer($message)){
+            return 404;
         }
 
         $body = nl2br($sd->message);
 
-        Abricos::Notify()->SendMail($feedback->email, "Re: ".SystemModule::$instance->GetPhrases()->Get('site_name'), $body);
+        Abricos::Notify()->SendMail($message->email, "Re: ".SystemModule::$instance->GetPhrases()->Get('site_name'), $body);
 
-        FeedbackQuery::Reply($this->db, $feedbackId, Abricos::$user->id, $body);
+        $replyid = FeedbackQuery::Reply($this->db, $messageid, Abricos::$user->id, $body);
 
-        return $this->Feedback($feedbackId);
-    }
-
-    /**
-     * Удалить сообщение из базы
-     *
-     * @static
-     * @param integer $messageid идентификатор сообщения
-     */
-    public function MessageRemove($messageid) {
-        if (!$this->manager->IsAdminRole()) {
-            return null;
-        }
-        FeedbackQuery::MessageRemove(Brick::$db, $messageid);
-    }
-
-
-    public function ConfigToAJAX($overResult = null) {
-        $ret = !empty($overResult) ? $overResult : (new stdClass());
-        $ret->err = 0;
-
-        $result = $this->Config();
-        if (is_integer($result)) {
-            $ret->err = $result;
-        } else {
-            $ret->config = $result->ToAJAX();
-        }
-
+        $ret = new stdClass();
+        $ret->replyid = $replyid;
         return $ret;
     }
 
-    public function Config() {
-        if (!$this->manager->IsAdminRole()) {
+    public function MessageRemoveToJSON($messageid){
+        $res = $this->MessageRemove($messageid);
+        return $this->ResultToJSON('messageRemove', $res);
+    }
+
+    public function MessageRemove($messageid){
+        if (!$this->manager->IsAdminRole()){
+            return 403;
+        }
+        $message = $this->Message($messageid);
+        if (empty($message)){
+            return 404;
+        }
+        FeedbackQuery::MessageRemove(Abricos::$db, $messageid);
+
+        $ret = new stdClass();
+        $ret->messageid = $messageid;
+        return $ret;
+    }
+
+
+    public function ConfigToJSON(){
+        $res = $this->Config();
+        return $this->ResultToJSON('config', $res);
+    }
+
+    public function Config(){
+        if (!$this->manager->IsAdminRole()){
             return 403;
         }
 
         $phrases = FeedbackModule::$instance->GetPhrases();
 
         $d = array();
-        for ($i = 0; $i < $phrases->Count(); $i++) {
+        for ($i = 0; $i < $phrases->Count(); $i++){
             $ph = $phrases->GetByIndex($i);
             $d[$ph->id] = $ph->value;
         }
 
-        $config = new FeedbackConfig($d);
-
-        return $config;
+        return $this->models->InstanceClass('Config', $d);
     }
 
-    public function ConfigSaveToAJAX($sd) {
+    public function ConfigSaveToJSON($sd){
         $this->ConfigSave($sd);
-        return $this->ConfigToAJAX();
+        return $this->ConfigToJSON();
     }
 
-    public function ConfigSave($sd) {
-        if (!$this->manager->IsAdminRole()) {
+    public function ConfigSave($sd){
+        if (!$this->manager->IsAdminRole()){
             return 403;
         }
         $utmf = Abricos::TextParser(true);
@@ -294,6 +278,7 @@ class FeedbackManager {
 
         Abricos::$phrases->Save();
     }
+
 }
 
 ?>

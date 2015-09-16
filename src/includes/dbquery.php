@@ -43,6 +43,8 @@ class FeedbackQuery {
 			)
 		";
 		$db->query_write($sql);
+
+        $replyid = $db->insert_id();
 		
 		$sql = "
 			UPDATE ".$db->prefix."fb_message
@@ -50,9 +52,10 @@ class FeedbackQuery {
 			WHERE messageid=".bkint($messageid)."
 		";
 		$db->query_write($sql);
+        return $replyid;
 	}
 	
-	public static function FeedbackList(Ab_Database $db){
+	public static function MessageList(Ab_Database $db){
 		$sql = "
 			SELECT
 				messageid as id,

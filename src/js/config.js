@@ -10,7 +10,7 @@ Component.entryPoint = function(NS){
         COMPONENT = this,
         SYS = Brick.mod.sys;
 
-    NS.ConfigWidget = Y.Base.create('configWidget', NS.AppWidget, [
+    NS.ConfigWidget = Y.Base.create('configWidget', SYS.AppWidget, [
         SYS.Form,
         SYS.FormAction
     ], {

@@ -11,71 +11,68 @@ Component.entryPoint = function(NS){
         COMPONENT = this,
         SYS = Brick.mod.sys;
 
-    var FeedbackBaseWidget = function(){
+    var MessageBaseWidget = function(){
     };
-    FeedbackBaseWidget.ATTRS = {
-        feedback: {
+    MessageBaseWidget.ATTRS = {
+        message: {
             value: null,
             setter: function(val){
                 if (val){
-                    this.renderFeedback.call(this, val);
+                    this.renderMessage.call(this, val);
                 }
                 return val;
             }
         },
-        feedbackId: {
+        messageid: {
             value: 0
         }
     };
-    FeedbackBaseWidget.prototype = {
+    MessageBaseWidget.prototype = {
         onInitAppWidget: function(err, appInstance){
-            var feedback = this.get('feedback');
-            if (feedback){
-                this.renderFeedback.call(this, feedback);
+            var message = this.get('message');
+            if (message){
+                this.renderMessage(this, message);
                 return;
             }
             this.set('waiting', true);
 
-            var feedbackId = this.get('feedbackId');
+            var messageid = this.get('messageid');
 
-            this.get('appInstance').feedbackLoad(feedbackId, function(err, result){
+            this.get('appInstance').message(messageid, function(err, result){
                 this.set('waiting', false);
                 if (!err){
-                    this.set('feedback', result.feedback);
+                    this.set('message', result.message);
                 }
             }, this);
         },
-        renderFeedback: function(){
+        renderMessage: function(){
         }
     };
-    NS.FeedbackBaseWidget = FeedbackBaseWidget;
+    NS.MessageBaseWidget = MessageBaseWidget;
 
-    NS.FeedbackViewWidget = Y.Base.create('feedbackViewWidget', NS.AppWidget, [
+    NS.MessageViewWidget = Y.Base.create('messageViewWidget', SYS.AppWidget, [
         SYS.Form,
         SYS.FormAction,
-        NS.FeedbackBaseWidget
+        NS.MessageBaseWidget
     ], {
-        renderFeedback: function(feedback){
-            feedback = feedback || this.get('feedback');
-            if (!feedback){
+        renderMessage: function(message){
+            message = message || this.get('message');
+            if (!message){
                 return;
             }
 
             var tp = this.template,
-                attrs = feedback.toJSON();
+                attrs = message.toJSON();
 
             for (var n in attrs){
-                var node = Y.one(tp.gel('fld' + n));
-                if (node){
-                    node.setHTML(attrs[n]);
-                }
+                tp.setHTML('fld' + n, attrs[n])
             }
 
-            if (!(Y.Lang.isString(attrs.email) && attrs.length > 0)){
-                Y.one(tp.gel('replywrap')).hide();
+            if (!(Y.Lang.isString(attrs.email) && attrs.email.length > 0)){
+                tp.hide('replywrap');
             }
 
-            var overFieldsJSON = feedback.get('overfields'),
+            var overFieldsJSON = message.get('overfields'),
                 overFields = {}, lstOverFields = "";
             try {
                 overFields = Y.JSON.parse(overFieldsJSON);
@@ -95,86 +92,66 @@ Component.entryPoint = function(NS){
             }
 
             var isReply = false, lst = "";
-            feedback.replyList.each(function(reply){
+            message.get('replyList').each(function(reply){
                 isReply = true;
-                lst += tp.replace('reply', reply.toJSON());
+                lst += tp.replace('replyRow', reply.toJSON());
             });
 
-            Y.one(tp.gel('replylist')).setHTML(lst);
+            tp.setHTML('replylist', lst);
 
             var model = new NS.Reply({
+                appInstance: this.get('appInstance'),
                 id: attrs.id,
                 body: ''
             });
             this.set('model', model);
 
             if (isReply){
-                Y.one(tp.gel('bshowreply')).hide();
+                tp.hide('bshowreply');
             } else {
-                this.showFeedbackReply();
+                this.showMessageReply();
             }
         },
-        onClick: function(e){
-            switch (e.dataClick) {
-                case 'feedback-reply':
-                    this.showFeedbackReply();
-                    return true;
-                case 'reply-cancel':
-                    this.hideFeedbackReply();
-                    return true;
-                case 'feedback-showdelete':
-                    this.showFeedbackDeleteButtons();
-                    return true;
-                case 'feedback-delete-cancel':
-                    this.hideFeedbackDeleteButtons();
-                    return true;
-                case 'feedback-delete':
-                    this.feedbackDelete();
-                    return true;
-            }
+        showMessageReply: function(){
+            this.template.toggleView(true, 'reply', 'bshowreply');
         },
-        showFeedbackReply: function(){
-            var tp = this.template;
-            Y.one(tp.gel('reply')).show();
-            Y.one(tp.gel('bgroup')).hide();
-        },
-        hideFeedbackReply: function(){
-            var tp = this.template;
-            Y.one(tp.gel('reply')).hide();
-            Y.one(tp.gel('bgroup')).show();
+        hideMessageReply: function(){
+            this.template.toggleView(false, 'reply', 'bshowreply');
         },
         onSubmitFormAction: function(){
             this.set('waiting', true);
 
             var model = this.get('model'),
-                feedbackId = this.get('feedbackId');
+                messageid = this.get('messageid');
 
-            this.get('appInstance').replySend(feedbackId, model, function(err, result){
+            this.get('appInstance').replySend(messageid, model, function(err, result){
                 this.set('waiting', false);
                 if (!err){
-                    this.set('feedback', result.feedback);
+                    this.set('message', result.message);
+                    this.renderMessage();
                 }
             }, this);
         },
-        showFeedbackDeleteButtons: function(){
-            var tp = this.template;
-            Y.one(tp.gel('bshowfbdelete')).hide();
-            Y.one(tp.gel('fbdelete')).show();
+        showMessageDeleteButtons: function(){
+            this.template.toggleView(false, 'bshowfbdelete', 'fbdelete');
         },
-        hideFeedbackDeleteButtons: function(){
-            var tp = this.template;
-            Y.one(tp.gel('bshowfbdelete')).show();
-            Y.one(tp.gel('fbdelete')).hide();
+        hideMessageDeleteButtons: function(){
+            this.template.toggleView(true, 'bshowfbdelete', 'fbdelete');
         },
-        feedbackDelete: function(){
+        messageRemove: function(){
             this.set('waiting', true);
 
-            var feedbackId = this.get('feedbackId');
+            var appInstance = this.get('appInstance'),
+                messageid = this.get('messageid');
 
-            this.get('appInstance').feedbackDelete(feedbackId, function(err, result){
+            appInstance.messageRemove(messageid, function(err, result){
                 this.set('waiting', false);
                 if (!err){
-                    console.log('delete');
+                    var messageList = this.get('appInstance').get('messageList');
+                    if (messageList){
+                        messageList.removeById(result.messageRemove.messageid);
+                    }
+                    this.go('manager.view');
                 }
             }, this);
         }
@@ -184,18 +161,21 @@ Component.entryPoint = function(NS){
                 value: COMPONENT
             },
             templateBlockName: {
-                value: 'widget,reply,overfields,overfield'
+                value: 'widget,replyRow,overfields,overfield'
             }
+        },
+        CLICKS: {
+            'message-reply': 'showMessageReply',
+            'reply-cancel': 'hideMessageReply',
+            'message-showdelete': 'showMessageDeleteButtons',
+            'message-delete-cancel': 'hideMessageDeleteButtons',
+            'message-delete': 'messageRemove'
         }
     });
 
-    NS.FeedbackViewWidget.parseURLParam = function(args){
-        args = Y.merge({
-            p1: 0
-        }, args || {});
-
+    NS.MessageViewWidget.parseURLParam = function(args){
         return {
-            feedbackId: args.p1
+            messageid: args[0] | 0
         };
     };
 

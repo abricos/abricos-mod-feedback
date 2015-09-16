@@ -7,9 +7,6 @@
  * @author Alexander Kuzmin <roosit@abricos.org>
  */
 
-require_once 'classes/structure.php';
-require_once 'dbquery.php';
-
 /**
  * Class FeedbackModuleManager
  */
@@ -20,7 +17,7 @@ class FeedbackModuleManager extends Ab_ModuleManager {
      */
     public static $instance = null;
 
-    private $_feedbackManager = null;
+    private $_feedback = null;
 
     public function __construct($module) {
         parent::__construct($module);
@@ -47,52 +44,31 @@ class FeedbackModuleManager extends Ab_ModuleManager {
     }
 
     /**
-     * @return FeedbackManager
+     * @return Feedback
      */
-    public function GetFeedbackManager() {
-        if (empty($this->_feedbackManager)) {
+    public function GetFeedback() {
+        if (empty($this->_feedback)) {
+            require_once 'classes/models.php';
+            require_once 'dbquery.php';
             require_once 'classes/feedback.php';
-            $this->_feedbackManager = new FeedbackManager($this);
+            $this->_feedback = new Feedback($this);
         }
-        return $this->_feedbackManager;
-    }
-
-    public function TreatResult($res) {
-        $ret = new stdClass();
-        $ret->err = 0;
-
-        if (is_integer($res)) {
-            $ret->err = $res;
-        } else if (is_object($res)) {
-            $ret = $res;
-        }
-        if (isset($ret->err)){
-            $ret->err = intval($ret->err);
-        }
-
-        return $ret;
+        return $this->_feedback;
     }
 
     public function AJAX($d) {
-        $ret = $this->GetFeedbackManager()->AJAX($d);
-
-        if (empty($ret)) {
-            $ret = new stdClass();
-            $ret->err = 500;
-        }
-
-        return $ret;
+        return $this->GetFeedback()->AJAX($d);
     }
 
     public function Bos_MenuData() {
         if (!$this->IsAdminRole()) {
             return null;
         }
-        $lng = $this->module->GetI18n();
+        $i18n = $this->module->I18n();
         return array(
             array(
                 "name" => "feedback",
-                "title" => $lng['bosmenu']['feedback'],
+                "title" => $i18n->Translate('bosmenu.feedback'),
                 "icon" => "/modules/feedback/images/icon.gif",
                 "url" => "feedback/wspace/ws",
                 "parent" => "controlPanel"

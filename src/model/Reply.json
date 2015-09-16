@@ -1,0 +1,20 @@
+{
+  "version": "0.1.0",
+  "type": "model",
+  "rolefn": "IsAdminRole",
+  "fields": {
+    "id": {
+      "type": "int"
+    },
+    "userid": {
+      "type": "int"
+    },
+    "message": {
+      "type": "string",
+      "json": "msg"
+    },
+    "dateline": {
+      "type": "date"
+    }
+  }
+}

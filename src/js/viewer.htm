@@ -4,38 +4,42 @@
         <div class="panel-heading">
 
             <div class="row">
-                <div class="col-md-7">
-                    <h3 class="panel-title">
-                        <a href="#" data-click="feedback-list">Сообщение</a></span></h3>
+                <div class="col-sm-6">
+                    <h3 class="panel-title">Сообщение</h3>
+
                 </div>
-                <div class="col-md-5">
-                    <div id="{i#bgroup}" class="text-right">
-                        <span data-wait="show">
-                            <img src="/images/loading.gif"/> Загрузка...
-                        </span>
+                <div class="col-sm-6">
+
+                    <div data-wait="show" class="pull-right">
+                        <img src="/images/loading.gif"/>
+                    </div>
+
+                    <div id="{i#bgroup}" class="pull-right">
 
                         <button id="{i#bshowreply}" type="button" class="btn btn-default btn-xs"
-                                data-click="feedback-reply"
+                                data-click="message-reply"
                                 data-wait="disable">
                             Ответить
                         </button>
                         <button id="{i#bshowfbdelete}" type="button" class="btn btn-default btn-xs"
-                                data-click="feedback-showdelete"
+                                data-click="message-showdelete"
                                 data-wait="disable">
                             Удалить
                         </button>
 
-                        <span id="{i#fbdelete}" class="btn-group" style="display: none">
-                            <button type="button" class="btn btn-danger btn-xs" data-click="feedback-delete"
+                        <span id="{i#fbdelete}" class="btn-group hide">
+                            <button type="button" class="btn btn-danger btn-xs" data-click="message-delete"
                                     data-wait="disable">
                                 Удалить?
                             </button>
-                            <button type="button" class="btn btn-default btn-xs" data-click="feedback-delete-cancel"
+                            <button type="button" class="btn btn-default btn-xs" data-click="message-delete-cancel"
                                     data-wait="disable">
                                 Отмена
                             </button>
                         </span>
+
                     </div>
+
                 </div>
             </div>
         </div>
@@ -58,7 +62,7 @@
             <div id="{i#replylist}"></div>
 
             <div id="{i#replywrap}">
-                <div id="{i#reply}" style="display: none">
+                <div id="{i#reply}" class="hide">
                     <hr/>
 
                     <div class="form-group">
@@ -74,9 +78,9 @@
                     </div>
 
                     <div class="btn-toolbar text-right">
-                    <span data-wait="show">
-                        <img src="/images/loading.gif"/> Отправка...
-                    </span>
+                        <span data-wait="show">
+                            <img src="/images/loading.gif"/> Отправка...
+                        </span>
                         <button type="submit" data-click="reply-send" class="btn btn-default" data-wait="disable">
                             Отправить ответ
                         </button>
@@ -100,7 +104,7 @@
 <dd>{v#value}</dd>
 
 
-<!--{reply}-->
+<!--{replyRow}-->
 <div class="reply-view">
     <hr/>
     <div class="form-group">

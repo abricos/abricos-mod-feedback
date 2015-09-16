@@ -12,28 +12,35 @@ Component.entryPoint = function(NS){
 
     NS.ManagerWidget = Y.Base.create('managerWidget', SYS.AppWidget, [], {
         onInitAppWidget: function(err, appInstance, options){
-            this.reloadFeedbackList();
+            this.reloadMessageList();
+            this.get('appInstance').on('appResponses', this._onAppResponses, this);
         },
-        reloadFeedbackList: function(){
+        destructor: function(){
+            this.get('appInstance').detach('appResponses', this._onAppResponses, this);
+        },
+        _onAppResponses: function(e){
+            if (e.err || !e.result.messageRemove){
+                return;
+            }
+            this.renderMessageList();
+        },
+        reloadMessageList: function(){
             this.set('waiting', true);
 
-            this.get('appInstance').feedbackListLoad(function(err, result){
+            this.get('appInstance').messageList(function(err, result){
                 this.set('waiting', false);
-                if (!err){
-                    this.set('feedbackList', result.feedbackList);
-                }
-                this.renderFeedbackList();
+                this.renderMessageList();
             }, this);
         },
-        renderFeedbackList: function(){
-            var feedbackList = this.get('feedbackList');
-            if (!feedbackList){
+        renderMessageList: function(){
+            var messageList = this.get('appInstance').get('messageList');
+            if (!messageList){
                 return;
             }
 
             var tp = this.template, lst = "";
 
-            feedbackList.each(function(feedback){
+            messageList.each(function(feedback){
                 var attrs = feedback.toJSON();
                 lst += tp.replace('row', [
                     attrs, {
@@ -44,21 +51,6 @@ Component.entryPoint = function(NS){
             tp.gel('list').innerHTML = tp.replace('list', {
                 'rows': lst
             });
-        },
-        onClick: function(e){
-            var feedbackId = e.target.getData('id') | 0;
-            if (feedbackId === 0){
-                return;
-            }
-
-            switch (e.dataClick) {
-                case 'feedback-open':
-                    this.showFeedback(feedbackId);
-                    return true;
-            }
-        },
-        showFeedback: function(feedbackId){
-            Brick.Page.reload(NS.URL.feedback.view(feedbackId));
         }
     }, {
         ATTRS: {
@@ -67,9 +59,14 @@ Component.entryPoint = function(NS){
             },
             templateBlockName: {
                 value: 'widget,list,row'
-            },
-            feedbackList: {
-                value: null
+            }
+        },
+        CLICKS: {
+            'feedback-open': {
+                event: function(e){
+                    var feedbackId = e.target.getData('id') | 0;
+                    this.go('message.view', feedbackId);
+                }
             }
         }
     });

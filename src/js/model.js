@@ -1,67 +1,43 @@
 var Component = new Brick.Component();
 Component.requires = {
-    yui: ['model', 'model-list']
+    yui: ['model', 'model-list'],
+    mod: [
+        {name: 'sys', files: ['appModel.js']}
+    ]
 };
 Component.entryPoint = function(NS){
 
-    var Y = Brick.YUI;
+    var Y = Brick.YUI,
+        SYS = Brick.mod.sys;
 
-    NS.Feedback = Y.Base.create('feedback', Y.Model, [], {
-        initializer: function(){
-            this.replyList = null;
-        }
-    }, {
+    NS.Feedback = Y.Base.create('feedback', Y.Model, [], {}, {
         ATTRS: {
-            fio: {
-                value: ''
-            },
-            phone: {
-                value: ''
-            },
-            email: {
-                value: ''
-            },
-            message: {
-                value: ''
-            },
-            overfields: {
-                value: ''
-            },
-            dateline: {
-                value: 0
-            }
+            fio: {value: ''},
+            phone: {value: ''},
+            email: {value: ''},
+            message: {value: ''},
+            overfields: {value: ''},
+            dateline: {value: 0}
         }
     });
 
-    NS.FeedbackList = Y.Base.create('feedbackList', Y.ModelList, [], {
-        model: NS.Feedback
+    NS.Message = Y.Base.create('message', SYS.AppModel, [], {
+        structureName: 'Message'
     });
 
-    NS.Reply = Y.Base.create('reply', Y.Model, [], {}, {
-        ATTRS: {
-            userid: {
-                value: 0
-            },
-            message: {
-                value: ''
-            },
-            dateline: {
-                value: 0
-            }
-        }
+    NS.MessageList = Y.Base.create('messageList', SYS.AppModelList, [], {
+        appItem: NS.Message
     });
 
-    NS.ReplyList = Y.Base.create('replyList', Y.ModelList, [], {
-        model: NS.Reply
+    NS.Reply = Y.Base.create('reply', SYS.AppModel, [], {
+        structureName: 'Reply'
     });
 
-    NS.Config = Y.Base.create('config', Y.Model, [], {}, {
-        ATTRS: {
-            adm_emails: {
-                value: ''
-            }
-        }
+    NS.ReplyList = Y.Base.create('replyList', SYS.AppModelList, [], {
+        appItem: NS.Reply
     });
 
-
+    NS.Config = Y.Base.create('config', SYS.AppModel, [], {
+        structureName: 'Config'
+    });
 };

@@ -1,0 +1,33 @@
+{
+  "version": "0.1.0",
+  "type": "model",
+  "rolefn": "IsAdminRole",
+  "fields": {
+    "id": {
+      "type": "int"
+    },
+    "fio": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string",
+      "json": "eml"
+    },
+    "message": {
+      "type": "string",
+      "json": "msg"
+    },
+    "overfields": {
+      "type": "string"
+    },
+    "dateline": {
+      "type": "date"
+    },
+    "replyList": {
+      "type": "list:ReplyList"
+    }
+  }
+}
