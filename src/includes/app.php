@@ -12,7 +12,7 @@
  *
  * @property FeedbackModuleManager $manager
  */
-class Feedback extends AbricosApplication {
+class FeedbackApp extends AbricosApplication {
 
     protected function GetClasses(){
         return array(
@@ -65,14 +65,37 @@ class Feedback extends AbricosApplication {
             return 403;
         }
 
+        $lstFields = "";
+
+        $notifyBrick = Brick::$builder->LoadBrickS("feedback", "adminNotify");
+        $v = &$notifyBrick->param->var;
+
         $utmf = Abricos::TextParser(true);
+
+        $defFields = array(
+            'fio',
+            'phone',
+            'email'
+        );
+
+        foreach ($defFields as $key){
+            $data->$key = isset($data->$key) ? $utmf->Parser($data->$key) : "";
+            if (!empty($data->$key)){
+                $lstFields .= Brick::ReplaceVarByData($v[$key.'Field'], array(
+                    "value" => $data->$key
+                ));
+            }
+        }
 
         $utm = Abricos::TextParser();
         $utm->jevix->cfgSetAutoBrMode(true);
 
-        $messageeml = $utm->JevixParser(nl2br($data->message));
-        $message = $utm->JevixParser($data->message);
-        $message = str_replace("<br/>", "", $message);
+        $data->message = isset($data->message) ? trim($data->message) : "";
+        if (!empty($data->message)){
+            $lstFields .= Brick::ReplaceVarByData($v['messageField'], array(
+                "value" => $utm->JevixParser($data->message)
+            ));
+        }
 
         $overFields = "";
         $overFieldsArray = array();
@@ -83,59 +106,55 @@ class Feedback extends AbricosApplication {
             ){
                 continue;
             }
-            if (strlen($value) > 1000 || count($overFieldsArray) > 50){
+            if (strlen($value) > 1000 || count($overFieldsArray) > 30){
                 continue;
             }
+
             $newval = $utmf->Parser($value);
             if (empty($newval)){
                 continue;
             }
+
             $overFieldsArray[$key] = $newval;
+
+            $lstFields .= Brick::ReplaceVarByData($v['overField'], array(
+                "key" => $key,
+                "value" => $newval
+            ));
         }
 
         if (count($overFieldsArray) > 0){
             $overFields = json_encode($overFieldsArray);
         }
 
-        $userid = Abricos::$user->id;
+        /** @var NotifyApp $notifyApp */
+        $notifyApp = Abricos::GetApp('notify');
 
-        if ($userid === 0 && empty($data->email)){
-            // return 0;
-        }
-
-        $globalid = md5(TIMENOW + rand(0, 1000));
-
-        $emails = FeedbackModule::$instance->GetPhrases()->Get('adm_emails');
-        $arr = explode(',', $emails);
-
-        $brick = Brick::$builder->LoadBrickS("feedback", "templates");
-        $v = $brick->param->var;
-
-        $subject = $v['adm_notify_subj'];
-        $body = Brick::ReplaceVarByData($v['adm_notify'], array(
-            "unm" => $data->fio,
-            "phone" => $data->phone,
-            "email" => $data->email,
-            "text" => $messageeml
+        $body = Brick::ReplaceVarByData($notifyBrick->content, array(
+            "result" => $lstFields,
         ));
 
-        if (count($arr) === 0 || (count($arr) === 1) && empty($arr[0])){
-            array_push($arr, SystemModule::$instance->GetPhrases()->Get('admin_mail'));
-        }
-
+        $arr = explode(',', $this->Config()->adm_emails);
         foreach ($arr as $email){
             $email = trim($email);
             if (empty($email)){
                 continue;
             }
 
-            Abricos::Notify()->SendMail($email, $subject, $body);
+            $mail = $notifyApp->MailByFields($email, $v['subject'], $body);
+            $mail->toName = '';
+            $mail->toEmail = $email;
+
+            $notifyApp->MailSend($mail);
         }
 
-        $messageId = FeedbackQuery::MessageAppend(Brick::$db, $globalid, $userid, $data->fio, $data->phone, $data->email, $message, $overFields);
+        $messageid = FeedbackQuery::MessageAppend(
+            Brick::$db, $mail->globalid, Abricos::$user->id,
+            $data->fio, $data->phone, $data->email, $data->body, $overFields
+        );
 
         $ret = new stdClass();
-        $ret->messageid = $messageId;
+        $ret->messageid = $messageid;
 
         return $ret;
     }
@@ -246,12 +265,12 @@ class Feedback extends AbricosApplication {
         return $this->ResultToJSON('config', $res);
     }
 
+    /**
+     * @return FeedbackConfig
+     */
     public function Config(){
-        if (!$this->manager->IsAdminRole()){
-            return 403;
-        }
-
         $phrases = FeedbackModule::$instance->GetPhrases();
+
 
         $d = array();
         for ($i = 0; $i < $phrases->Count(); $i++){
@@ -259,7 +278,16 @@ class Feedback extends AbricosApplication {
             $d[$ph->id] = $ph->value;
         }
 
-        return $this->models->InstanceClass('Config', $d);
+        /** @var FeedbackConfig $config */
+        $config = $this->models->InstanceClass('Config', $d);
+
+        $arr = explode(',', $config->adm_emails);
+
+        if (count($arr) === 0 || (count($arr) === 1) && empty($arr[0])){
+            $config->adm_emails = SystemModule::$instance->GetPhrases()->Get('admin_mail');
+        }
+
+        return $config;
     }
 
     public function ConfigSaveToJSON($sd){

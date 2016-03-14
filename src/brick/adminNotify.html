@@ -1,0 +1,52 @@
+<!--[*]
+
+[v=subject]Сообщение в форму обратной связи[/v]
+
+[v=fioField]
+    <dl>
+        <dt>Контактное лицо</dt><dd>{v#value}</dd>
+    </dl>
+[/v]
+
+[v=phoneField]
+    <dl>
+        <dt>Телефон</dt><dd>{v#value}</dd>
+    </dl>
+[/v]
+
+[v=emailField]
+    <dl>
+        <dt>E-mail</dt><dd>{v#value}</dd>
+    </dl>
+[/v]
+
+[v=messageField]
+    <dl>
+        <dt>Текст сообщения</dt><dd>{v#value}</dd>
+    </dl>
+[/v]
+
+[v=overField]
+    <dl>
+        <dt>{v#key}</dt><dd>{v#value}</dd>
+    </dl>
+[/v]
+
+[v=table]<ul>{v#rows}</ul>[/v]
+
+[*]-->
+<p>
+    Поступило новое сообщение в форму обратной связи на сайте
+    <a href="{v#host}">{v#host}</a>
+</p>
+
+{v#table}
+
+<p>
+    С наилучшими пожеланиями,<br />
+    {v#sitename}
+</p>
+
+<p style="font-size:11px;font-family: tahoma, verdana, arial, sans-serif;color:#999999;">
+    Сообщение было отправлено на ваш {v#email}
+</p>

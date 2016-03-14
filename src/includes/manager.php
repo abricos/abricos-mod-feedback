@@ -17,8 +17,6 @@ class FeedbackModuleManager extends Ab_ModuleManager {
      */
     public static $instance = null;
 
-    private $_feedback = null;
-
     public function __construct($module) {
         parent::__construct($module);
 
@@ -43,21 +41,8 @@ class FeedbackModuleManager extends Ab_ModuleManager {
         return $this->IsRoleEnable(FeedbackAction::VIEW);
     }
 
-    /**
-     * @return Feedback
-     */
-    public function GetFeedback() {
-        if (empty($this->_feedback)) {
-            require_once 'classes/models.php';
-            require_once 'dbquery.php';
-            require_once 'classes/feedback.php';
-            $this->_feedback = new Feedback($this);
-        }
-        return $this->_feedback;
-    }
-
     public function AJAX($d) {
-        return $this->GetFeedback()->AJAX($d);
+        return $this->GetApp()->AJAX($d);
     }
 
     public function Bos_MenuData() {

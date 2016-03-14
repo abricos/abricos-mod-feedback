@@ -4,6 +4,7 @@
   "rolefn": "IsAdminRole",
   "fields": {
     "adm_emails": {
+      "rolefn": "IsAdminRole",
       "type": "string"
     }
   }
