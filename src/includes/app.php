@@ -130,16 +130,21 @@ class FeedbackApp extends AbricosApplication {
         /** @var NotifyApp $notifyApp */
         $notifyApp = Abricos::GetApp('notify');
 
-        $body = Brick::ReplaceVarByData($notifyBrick->content, array(
-            "result" => $lstFields,
-        ));
-
         $arr = explode(',', $this->Config()->adm_emails);
         foreach ($arr as $email){
             $email = trim($email);
             if (empty($email)){
                 continue;
             }
+
+            $body = Brick::ReplaceVarByData($notifyBrick->content, array(
+                "host" => Ab_URI::fetch_host(),
+                "email" => $email,
+                "sitename" => SystemModule::$instance->GetPhrases()->Get('site_name'),
+                "table" => Brick::ReplaceVarByData($v['table'], array(
+                    "rows" => $lstFields
+                )),
+            ));
 
             $mail = $notifyApp->MailByFields($email, $v['subject'], $body);
             $mail->toName = '';
@@ -150,7 +155,7 @@ class FeedbackApp extends AbricosApplication {
 
         $messageid = FeedbackQuery::MessageAppend(
             Brick::$db, $mail->globalid, Abricos::$user->id,
-            $data->fio, $data->phone, $data->email, $data->body, $overFields
+            $data->fio, $data->phone, $data->email, $data->message, $overFields
         );
 
         $ret = new stdClass();
