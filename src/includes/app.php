@@ -153,8 +153,10 @@ class FeedbackApp extends AbricosApplication {
             $notifyApp->MailSend($mail);
         }
 
+        $globalid = md5(md5(TIMENOW).rand());
+
         $messageid = FeedbackQuery::MessageAppend(
-            Brick::$db, $mail->globalid, Abricos::$user->id,
+            Brick::$db, $globalid, Abricos::$user->id,
             $data->fio, $data->phone, $data->email, $data->message, $overFields
         );
 
