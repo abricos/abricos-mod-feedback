@@ -133,5 +133,3 @@ class FeedbackQuery {
 		return $db->insert_id();
 	}
 }
-
-?>

@@ -61,5 +61,3 @@ if ($updateManager->isUpdate('0.2.5.1') && !$updateManager->isInstall()){
 
     $db->query_write("DROP TABLE IF EXISTS ".$pfx."fb_admin");
 }
-
-?>

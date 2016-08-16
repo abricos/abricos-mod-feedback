@@ -78,5 +78,3 @@ class FeedbackModuleManager extends Ab_ModuleManager {
     }
 
 }
-
-?>

@@ -52,5 +52,3 @@ class FeedbackConfig extends AbricosModel {
     protected $_structModule = 'feedback';
     protected $_structName = 'Config';
 }
-
-?>
